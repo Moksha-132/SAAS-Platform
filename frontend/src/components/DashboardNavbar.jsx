@@ -1,0 +1,46 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Bell, User, LogOut } from 'lucide-react';
+
+const DashboardNavbar = ({ role }) => {
+  return (
+    <nav className="w-full bg-white border-b border-slate-200 py-4 shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center cursor-pointer">
+            <Link to="/" className="text-2xl font-black text-slate-900 tracking-wider">
+              SYNCSAAS
+            </Link>
+          </div>
+          
+          <div className="hidden md:flex items-center space-x-8">
+            <Link to={`/${role}-dashboard`} className="text-slate-900 font-bold transition-colors">Overview</Link>
+            <Link to="#" className="text-slate-500 font-medium hover:text-slate-900 transition-colors">Messages</Link>
+            <Link to="#" className="text-slate-500 font-medium hover:text-slate-900 transition-colors">Settings</Link>
+          </div>
+
+          <div className="flex items-center gap-6">
+            <button className="text-slate-500 hover:text-[#f97316] transition-colors relative">
+              <Bell className="w-6 h-6" />
+              <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-[#f97316] border-2 border-white rounded-full"></span>
+            </button>
+            
+            <div className="flex items-center gap-3 border-l border-slate-200 pl-6">
+              <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-600">
+                <User className="w-5 h-5" />
+              </div>
+              <div className="hidden md:block text-left">
+                <p className="text-sm font-bold text-slate-900 leading-tight capitalize">{role}</p>
+                <Link to="/" className="text-xs text-slate-500 hover:text-[#f97316] flex items-center gap-1 mt-0.5">
+                  <LogOut className="w-3 h-3" /> Log Out
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
+};
+
+export default DashboardNavbar;
