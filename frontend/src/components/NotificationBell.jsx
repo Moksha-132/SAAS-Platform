@@ -12,7 +12,7 @@ const NotificationBell = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+    if ('Notification' in window && Notification.permission !== 'granted' && Notification.permission !== 'denied') {
       Notification.requestPermission();
     }
 
@@ -29,7 +29,7 @@ const NotificationBell = () => {
       setNotifications(prev => [data, ...prev]);
       setUnreadCount(prev => prev + 1);
 
-      if (Notification.permission === 'granted') {
+      if ('Notification' in window && Notification.permission === 'granted') {
         new Notification(data.type === 'meeting' ? 'New Meeting Scheduled' : 'New Message', {
           body: data.message,
           icon: '/favicon.ico'
