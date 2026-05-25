@@ -17,6 +17,12 @@ import ManagerSoftware from './pages/ManagerSoftware';
 import ManagerChat from './pages/ManagerChat';
 import ManagerSales from './pages/ManagerSales';
 import UserDashboard from './pages/UserDashboard';
+import UserMarketplace from './pages/UserMarketplace';
+import UserContact from './pages/UserContact';
+import UserChat from './pages/UserChat';
+import UserCart from './pages/UserCart';
+import UserSettings from './pages/UserSettings';
+import ManagerSettings from './pages/ManagerSettings';
 
 function App() {
   return (
@@ -30,21 +36,24 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         
-        {/* Admin Routes */}
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/admin-companies" element={<AdminCompanies />} />
         <Route path="/admin-managers" element={<AdminManagers />} />
         <Route path="/admin-software" element={<AdminSoftware />} />
         <Route path="/admin-analytics" element={<AdminAnalytics />} />
 
-        {/* Manager Routes */}
         <Route path="/manager-dashboard" element={<ManagerDashboard />} />
         <Route path="/manager-software" element={<ManagerSoftware />} />
         <Route path="/manager-chat" element={<ManagerChat />} />
         <Route path="/manager-sales" element={<ManagerSales />} />
+        <Route path="/manager-settings" element={<ManagerSettings />} />
 
-        {/* User Routes */}
         <Route path="/user-dashboard" element={<UserDashboard />} />
+        <Route path="/user-marketplace" element={<UserMarketplace />} />
+        <Route path="/user-cart" element={<UserCart />} />
+        <Route path="/user-contact" element={<UserContact />} />
+        <Route path="/user-chat" element={<UserChat />} />
+        <Route path="/user-settings" element={<UserSettings />} />
       </Routes>
     </Router>
   );

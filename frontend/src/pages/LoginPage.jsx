@@ -8,18 +8,38 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (email === 'admin@syncsaas.com') {
-      navigate('/admin-dashboard');
-    } else if (email === 'manager@syncsaas.com') {
-      navigate('/manager-dashboard');
-    } else if (email === 'user@company.com') {
-      navigate('/user-dashboard');
-    } else if (email && password) {
-      navigate('/user-dashboard');
-    } else {
+    if (!email || !password) {
       alert('Please enter email and password');
+      return;
+    }
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        
+        if (data.user.role === 'admin') {
+          navigate('/admin-dashboard');
+        } else if (data.user.role === 'manager') {
+          navigate('/manager-dashboard');
+        } else {
+          navigate('/user-dashboard');
+        }
+      } else {
+        alert(data.message || 'Login failed. Please verify credentials.');
+      }
+    } catch (error) {
+      console.error('Authentication Error:', error);
+      alert('Unable to reach auth server. Defaulting to local demo fallback.');
+      navigate('/user-dashboard');
     }
   };
 
@@ -42,7 +62,7 @@ const LoginPage = () => {
       <div className="flex-grow pt-24 pb-20 px-4 sm:px-6 lg:px-8 w-full flex items-center justify-center">
         <div className="w-full max-w-md">
           <div className="text-center mb-10">
-            <h1 className="text-4xl font-extrabold text-slate-900 mb-3">Welcome <span className="text-[#f97316]">Back</span></h1>
+            <h1 className="text-4xl font-extrabold text-slate-900 mb-3">Welcome <span className="text-[#b45309]">Back</span></h1>
             <p className="text-slate-500">Log in to manage your software and subscriptions.</p>
           </div>
           
@@ -61,7 +81,7 @@ const LoginPage = () => {
               <div>
                 <div className="flex justify-between items-center mb-2">
                   <label className="block text-sm font-bold text-slate-900">Password</label>
-                  <a href="#" className="text-sm text-[#f97316] hover:underline font-medium">Forgot password?</a>
+                  <a href="#" className="text-sm text-[#b45309] hover:underline font-medium">Forgot password?</a>
                 </div>
                 <input 
                   type="password" 
@@ -71,14 +91,14 @@ const LoginPage = () => {
                   placeholder="••••••••" 
                 />
               </div>
-              <button type="submit" className="w-full bg-[#0F172A] hover:bg-slate-800 text-white px-6 py-4 rounded-xl font-bold text-lg transition-all shadow-md">
+              <button type="submit" className="w-full bg-[#0B132B] hover:bg-slate-800 text-white px-6 py-4 rounded-xl font-bold text-lg transition-all shadow-md">
                 Sign In
               </button>
             </form>
             
             <div className="mt-8 text-center">
               <p className="text-slate-500 text-sm">
-                Don't have an account? <Link to="/register" className="text-[#0F172A] font-bold hover:underline">Register here</Link>
+                Don't have an account? <Link to="/register" className="text-[#0B132B] font-bold hover:underline">Register here</Link>
               </p>
             </div>
           </div>
@@ -89,19 +109,19 @@ const LoginPage = () => {
             <div className="flex flex-col gap-3">
               <button 
                 onClick={() => fillCredentials('admin')}
-                className="text-sm bg-white border border-slate-200 px-4 py-2 rounded-lg hover:border-[#f97316] hover:text-[#f97316] transition-colors"
+                className="text-sm bg-white border border-slate-200 px-4 py-2 rounded-lg hover:border-[#b45309] hover:text-[#b45309] transition-colors"
               >
                 <strong>Admin:</strong> admin@syncsaas.com / admin123
               </button>
               <button 
                 onClick={() => fillCredentials('manager')}
-                className="text-sm bg-white border border-slate-200 px-4 py-2 rounded-lg hover:border-[#f97316] hover:text-[#f97316] transition-colors"
+                className="text-sm bg-white border border-slate-200 px-4 py-2 rounded-lg hover:border-[#b45309] hover:text-[#b45309] transition-colors"
               >
                 <strong>Manager:</strong> manager@syncsaas.com / manager123
               </button>
               <button 
                 onClick={() => fillCredentials('user')}
-                className="text-sm bg-white border border-slate-200 px-4 py-2 rounded-lg hover:border-[#f97316] hover:text-[#f97316] transition-colors"
+                className="text-sm bg-white border border-slate-200 px-4 py-2 rounded-lg hover:border-[#b45309] hover:text-[#b45309] transition-colors"
               >
                 <strong>User:</strong> user@company.com / user123
               </button>

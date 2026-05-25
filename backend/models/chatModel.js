@@ -1,12 +1,12 @@
 import pool from '../config/db.js';
 
-export const saveChatMessage = async ({ senderId, receiverId, message }) => {
+export const saveChatMessage = async ({ senderId, receiverId, message, fileUrl, fileName }) => {
   const query = `
-    INSERT INTO chats (sender_id, receiver_id, message)
-    VALUES ($1, $2, $3)
+    INSERT INTO chats (sender_id, receiver_id, message, file_url, file_name)
+    VALUES ($1, $2, $3, $4, $5)
     RETURNING *
   `;
-  const values = [senderId, receiverId, message];
+  const values = [senderId, receiverId, message || '', fileUrl, fileName];
   const { rows } = await pool.query(query, values);
   return rows[0];
 };
@@ -31,4 +31,10 @@ export const markMessagesAsRead = async (senderId, receiverId) => {
   `;
   const { rows } = await pool.query(query, [senderId, receiverId]);
   return rows;
+};
+
+export const findChatById = async (chatId) => {
+  const query = 'SELECT sender_id, receiver_id FROM chats WHERE id = $1';
+  const { rows } = await pool.query(query, [chatId]);
+  return rows[0];
 };

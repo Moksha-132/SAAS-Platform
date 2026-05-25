@@ -12,12 +12,12 @@ export const createMeeting = async ({ chatId, title, scheduledTime, meetingLink 
 };
 
 export const fetchMeetingsForUser = async (userId) => {
-  // Fetches scheduled meetings where the user is either sender or receiver of the related chat
   const query = `
     SELECT m.*, c.sender_id, c.receiver_id 
     FROM meetings m
     JOIN chats c ON m.chat_id = c.id
-    WHERE c.sender_id = $1 OR c.receiver_id = $1
+    WHERE (c.sender_id = $1 OR c.receiver_id = $1)
+      AND m.scheduled_time >= CURRENT_TIMESTAMP
     ORDER BY m.scheduled_time ASC
   `;
   const { rows } = await pool.query(query, [userId]);

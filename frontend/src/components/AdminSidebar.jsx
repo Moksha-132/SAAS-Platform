@@ -8,17 +8,18 @@ const AdminSidebar = () => {
 
   const getLinkClass = (currentPath) => {
     return path === currentPath
-      ? "flex items-center gap-3 bg-[#f97316] text-white px-4 py-3 rounded-xl font-medium transition-colors"
+      ? "flex items-center gap-3 bg-[#b45309] text-white px-4 py-3 rounded-xl font-medium transition-colors"
       : "flex items-center gap-3 text-slate-400 hover:bg-slate-800 hover:text-white px-4 py-3 rounded-xl font-medium transition-colors";
   };
 
   return (
     <div className="w-64 bg-[#0F172A] text-white min-h-screen fixed left-0 top-0 flex flex-col shadow-2xl z-50">
       <div className="p-6 mb-4">
-        <Link to="/" className="text-2xl font-black tracking-wider text-white flex items-center gap-2">
-          SYNCSAAS
+        <Link to="/" className="flex flex-col select-none text-white">
+          <span className="text-2xl font-black tracking-wider leading-none">SHNOOR</span>
+          <span className="text-[9px] font-black text-[#b45309] tracking-widest uppercase mt-1">International LLC</span>
         </Link>
-        <span className="text-xs text-[#f97316] font-bold uppercase tracking-widest mt-1 block">Admin Portal</span>
+        <span className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-2 block">Admin Portal</span>
       </div>
       
       <div className="flex-grow py-4">
@@ -55,7 +56,7 @@ const AdminSidebar = () => {
             <p className="text-sm font-bold">Software Owner</p>
           </div>
         </div>
-        <Link to="/" className="flex items-center gap-3 text-slate-400 hover:text-[#f97316] px-4 py-2 rounded-xl font-medium transition-colors">
+        <Link to="/" className="flex items-center gap-3 text-slate-400 hover:text-[#b45309] px-4 py-2 rounded-xl font-medium transition-colors">
           <LogOut className="w-5 h-5" />
           Log Out
         </Link>

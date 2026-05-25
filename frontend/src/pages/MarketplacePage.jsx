@@ -1,40 +1,82 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { Search, ShoppingCart, Star } from 'lucide-react';
+import { Search, ShoppingCart, ExternalLink } from 'lucide-react';
 
-const ProductCard = ({ name, category, price, rating }) => (
-  <div className="border border-slate-100 rounded-2xl p-6 bg-white hover:shadow-lg transition-shadow text-left flex flex-col h-full">
-    <div className="w-full h-40 bg-slate-50 rounded-xl mb-6 flex items-center justify-center">
-      <span className="text-slate-300 font-bold text-xl">{name}</span>
+const ProductCard = ({ software }) => (
+  <div className="border border-slate-100 rounded-2xl p-6 bg-white hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-left flex flex-col h-full shadow-sm">
+    <div className="w-full h-40 bg-slate-50 rounded-xl mb-6 flex items-center justify-center border border-slate-100">
+      <span className="text-slate-300 font-bold text-xl">{software.name}</span>
     </div>
     <div className="flex justify-between items-start mb-2">
-      <h3 className="text-lg font-bold text-slate-900">{name}</h3>
-      <div className="flex items-center gap-1 text-[#f97316]">
-        <Star className="w-4 h-4 fill-current" />
-        <span className="text-sm font-medium">{rating}</span>
+      <h3 className="text-xl font-bold text-slate-900">{software.name}</h3>
+    </div>
+    <p className="text-sm text-slate-500 mb-6 flex-grow line-clamp-3">{software.description}</p>
+    
+    <div className="space-y-2 mb-6 border-t border-slate-50 pt-4">
+      <div className="flex justify-between items-center text-sm">
+        <span className="text-slate-500 font-medium">Monthly Plan:</span>
+        <span className="font-bold text-slate-900">${software.monthly_price}</span>
+      </div>
+      <div className="flex justify-between items-center text-sm">
+        <span className="text-slate-500 font-medium">Yearly Plan:</span>
+        <span className="font-bold text-[#b45309]">${software.yearly_price}</span>
       </div>
     </div>
-    <p className="text-sm text-slate-500 mb-6 flex-grow">{category}</p>
-    <div className="flex items-center justify-between mt-auto">
-      <div>
-        <span className="text-xl font-black text-slate-900">${price}</span>
-        <span className="text-xs text-slate-400">/mo</span>
-      </div>
-      <button className="bg-[#0F172A] hover:bg-slate-800 text-white p-2 rounded-lg transition-colors">
-        <ShoppingCart className="w-5 h-5" />
+
+    <div className="flex items-center gap-2 mt-auto">
+      <button className="flex-1 bg-[#0B132B] hover:bg-slate-800 text-white py-3 rounded-xl font-bold transition-colors shadow-md flex items-center justify-center gap-2">
+        <ShoppingCart className="w-5 h-5" /> Buy Plan
       </button>
+      {software.deployment_link && (
+        <a 
+          href={software.deployment_link.startsWith('http') ? software.deployment_link : `https://${software.deployment_link}`}
+          target="_blank" rel="noreferrer"
+          className="bg-white border-2 border-slate-200 hover:border-[#b45309] hover:text-[#b45309] text-slate-500 p-3 rounded-xl transition-colors"
+          title="View Deployment"
+        >
+          <ExternalLink className="w-5 h-5" />
+        </a>
+      )}
     </div>
   </div>
 );
 
 const MarketplacePage = () => {
+  const [softwareList, setSoftwareList] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    const fetchSoftware = async () => {
+      try {
+        const url = searchQuery 
+          ? `http://localhost:5000/api/users/software?search=${encodeURIComponent(searchQuery)}`
+          : 'http://localhost:5000/api/users/software';
+        
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.success) {
+          setSoftwareList(data.software);
+        }
+      } catch (err) {
+        console.error("Failed to fetch software marketplace:", err);
+      }
+    };
+    
+    // Add small debounce for search query
+    const timerId = setTimeout(() => {
+      fetchSoftware();
+    }, 300);
+
+    return () => clearTimeout(timerId);
+  }, [searchQuery]);
+
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-slate-50 flex flex-col">
       <Navbar />
       <div className="flex-grow pt-24 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
         <div className="text-center mb-12">
-          <h1 className="text-5xl font-extrabold text-slate-900 mb-6">Software <span className="text-[#f97316]">Marketplace</span></h1>
+          <h1 className="text-5xl font-extrabold text-[#0B132B] mb-6">Software <span className="text-[#b45309]">Marketplace</span></h1>
           <p className="text-slate-500 text-lg max-w-2xl mx-auto">Discover the perfect tools to accelerate your business growth.</p>
         </div>
 
@@ -43,29 +85,26 @@ const MarketplacePage = () => {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
             <input 
               type="text" 
-              placeholder="Search for software, CRM, marketing tools..." 
-              className="w-full pl-12 pr-4 py-4 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#0F172A] focus:border-transparent transition-all"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search for software tools..." 
+              className="w-full pl-12 pr-4 py-4 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#b45309] focus:border-transparent shadow-sm transition-all"
             />
           </div>
-          <select className="px-6 py-4 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#0F172A]">
-            <option>All Categories</option>
-            <option>Marketing</option>
-            <option>Sales & CRM</option>
-            <option>Development Tools</option>
-            <option>Productivity</option>
-          </select>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <ProductCard name="DataFlow Pro" category="Analytics & Reporting" price="49" rating="4.9" />
-          <ProductCard name="CRM Sync" category="Sales & CRM" price="99" rating="4.8" />
-          <ProductCard name="MailBlast" category="Email Marketing" price="29" rating="4.7" />
-          <ProductCard name="DevStack Hub" category="Development Tools" price="149" rating="5.0" />
-          <ProductCard name="HR Manage" category="Human Resources" price="79" rating="4.6" />
-          <ProductCard name="SecureVault" category="Security" price="199" rating="4.9" />
-          <ProductCard name="DesignAI" category="Creative Tools" price="39" rating="4.5" />
-          <ProductCard name="TaskMaster" category="Productivity" price="19" rating="4.8" />
-        </div>
+        {softwareList.length === 0 ? (
+          <div className="text-center py-20 bg-white border border-slate-200 rounded-3xl">
+            <h3 className="text-xl font-bold text-slate-700 mb-2">No software found</h3>
+            <p className="text-slate-500">There are currently no products hosted in the marketplace matching your search.</p>
+          </div>
+        ) : (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {softwareList.map(software => (
+              <ProductCard key={software.id} software={software} />
+            ))}
+          </div>
+        )}
       </div>
       <Footer />
     </div>

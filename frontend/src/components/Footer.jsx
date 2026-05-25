@@ -8,9 +8,12 @@ const Footer = () => (
       <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
         {/* Column 1 */}
         <div className="md:col-span-2 pr-8">
-          <h2 className="text-xl font-bold mb-6 tracking-widest uppercase">SYNCSAAS</h2>
+          <div className="flex flex-col select-none mb-6">
+            <span className="text-xl font-black tracking-wider text-white leading-none">SHNOOR</span>
+            <span className="text-[9px] font-black text-[#b45309] tracking-widest uppercase mt-0.5">International LLC</span>
+          </div>
           <p className="text-slate-400 text-sm leading-relaxed mb-8 max-w-sm">
-            Transform your document intelligence with a platform that supports complex workflows, global compliance, and operational skill validation in one consistent experience.
+            Transform your software acquisition experience with a SaaS directory connecting providers, clients, and dedicated project managers in one premium platform.
           </p>
           <div className="flex gap-4">
             <div className="w-8 h-8 rounded-full border border-slate-700 flex items-center justify-center text-slate-400 hover:text-white hover:border-white transition-colors cursor-pointer">
@@ -64,7 +67,7 @@ const Footer = () => (
       {/* Bottom Bar */}
       <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
         <p className="text-slate-500 text-sm">
-          © 2026 SyncSaaS System. All rights reserved.
+          © 2026 SHNOOR International LLC. All rights reserved.
         </p>
         <div className="flex gap-6">
           <a href="#" className="text-slate-500 hover:text-white transition-colors text-sm">Privacy Policy</a>

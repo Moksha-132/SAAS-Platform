@@ -4,6 +4,7 @@ import http from 'http';
 import { Server } from 'socket.io';
 import dotenv from 'dotenv';
 import pool from './config/db.js';
+import { initializeDatabase } from './config/initDb.js';
 import { notFound, errorHandler } from './middleware/errorHandler.js';
 
 // Route imports
@@ -13,10 +14,19 @@ import managerRoutes from './routes/managerRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
 
+import path from 'path';
+import { fileURLToPath } from 'url';
+
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const server = http.createServer(app);
+
+// Serve uploaded documents statically
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // CORS setup allowing local development frontend
 const corsOptions = {
@@ -56,6 +66,30 @@ io.on('connection', (socket) => {
       senderId: data.senderId,
       message: `New message: "${data.message.substring(0, 30)}..."`
     });
+  });
+
+  // WebRTC Signaling events
+  socket.on('call_user', (data) => {
+    io.to(data.to).emit('call_incoming', {
+      offer: data.offer,
+      from: data.callerId
+    });
+  });
+
+  socket.on('accept_call', (data) => {
+    io.to(data.to).emit('call_accepted', {
+      answer: data.answer
+    });
+  });
+
+  socket.on('ice_candidate', (data) => {
+    io.to(data.to).emit('ice_candidate', {
+      candidate: data.candidate
+    });
+  });
+
+  socket.on('meeting_signal', (data) => {
+    io.to(data.to).emit('meeting_signal', data);
   });
 
   socket.on('disconnect', () => {
@@ -100,6 +134,8 @@ app.use(notFound);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
+server.listen(PORT, async () => {
   console.log(`Server actively running on port http://localhost:${PORT}`);
+  // Initialize Database schemas and seed demo profiles automatically
+  await initializeDatabase();
 });
