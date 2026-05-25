@@ -43,6 +43,10 @@ const AdminSidebar = () => {
             <BarChart3 className="w-5 h-5" />
             Analytics
           </Link>
+          <Link to="/admin-settings" className={getLinkClass('/admin-settings')}>
+            <Settings className="w-5 h-5" />
+            Website Settings
+          </Link>
         </nav>
       </div>
 

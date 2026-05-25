@@ -45,3 +45,41 @@ export const getPendingManagersList = async () => {
   const { rows } = await pool.query(query);
   return rows;
 };
+
+export const updateUserDetailFields = async (id, { companyName, email, isApproved, paymentCompleted, monthlySpend }) => {
+  const existing = await pool.query("SELECT * FROM users WHERE id = $1", [id]);
+  if (existing.rows.length === 0) {
+    return null;
+  }
+
+  const current = existing.rows[0];
+
+  const finalCompanyName = companyName !== undefined ? companyName : current.company_name;
+  const finalEmail = email !== undefined ? email : current.email;
+  const finalIsApproved = isApproved !== undefined ? isApproved : current.is_approved;
+  const finalPaymentCompleted = paymentCompleted !== undefined ? paymentCompleted : current.payment_completed;
+  const finalMonthlySpend = monthlySpend !== undefined ? monthlySpend : current.monthly_spend;
+
+  const { rows } = await pool.query(
+    `UPDATE users 
+     SET company_name = $1, 
+         email = $2,
+         is_approved = $3,
+         payment_completed = $4,
+         monthly_spend = $5,
+         updated_at = NOW() 
+     WHERE id = $6 
+     RETURNING id, email, company_name, is_approved, payment_completed, monthly_spend`,
+    [finalCompanyName, finalEmail, finalIsApproved, finalPaymentCompleted, finalMonthlySpend, id]
+  );
+
+  return rows[0];
+};
+
+export const deleteUserById = async (id) => {
+  const { rows } = await pool.query(
+    "DELETE FROM users WHERE id = $1 RETURNING id, email, role",
+    [id]
+  );
+  return rows[0];
+};

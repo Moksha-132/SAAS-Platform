@@ -18,7 +18,7 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 
-// CORS setup allowing local development frontend
+// CORS setup
 const corsOptions = {
   origin: process.env.FRONTEND_URL || 'http://localhost:5173',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
@@ -34,23 +34,15 @@ const io = new Server(server, {
   cors: corsOptions
 });
 
-// Real-time Chat & Notification event sockets
 io.on('connection', (socket) => {
   console.log(`User connected with socket ID: ${socket.id}`);
-
-  // User registers their interest / user ID to receive direct messages
   socket.on('join_room', (userId) => {
     socket.join(userId);
     console.log(`Socket user ${userId} joined their personal room`);
   });
-
-  // Emitted by client when sending a message
   socket.on('send_message', (data) => {
-    // data structure: { senderId, receiverId, message, createdAt }
     const { receiverId } = data;
-    // Emit message to receiver's private room
     io.to(receiverId).emit('receive_message', data);
-    // Send global notification toast to receiver
     io.to(receiverId).emit('notification', {
       type: 'chat',
       senderId: data.senderId,
@@ -62,14 +54,10 @@ io.on('connection', (socket) => {
     console.log(`Socket disconnected: ${socket.id}`);
   });
 });
-
-// Attach io to req object to access it inside controllers/services easily
 app.use((req, res, next) => {
   req.io = io;
   next();
 });
-
-// Basic Root status route
 app.get('/api/status', async (req, res) => {
   try {
     const dbCheck = await pool.query('SELECT NOW()');
@@ -94,8 +82,6 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/managers', managerRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/chats', chatRoutes);
-
-// Fallback handling
 app.use(notFound);
 app.use(errorHandler);
 

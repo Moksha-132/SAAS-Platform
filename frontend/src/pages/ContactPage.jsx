@@ -4,68 +4,122 @@ import Footer from '../components/Footer';
 import { Mail, Phone, MapPin } from 'lucide-react';
 
 const ContactPage = () => {
+  const stored = localStorage.getItem('syncsaas_website_settings');
+  const settings = stored ? JSON.parse(stored) : null;
+
+  const contactTitle = settings?.contactTitle || 'Get in Touch';
+  const contactSubtitle = settings?.contactSubtitle || "Have questions about our platform? We're here to help.";
+  const contactEmail = settings?.contactEmail || 'info@shnoor.com';
+  const contactPhone1 = settings?.contactPhone1 || '+91-9429694298';
+  const contactPhone2 = settings?.contactPhone2 || '+91-9041914601';
+  const contactAddress = settings?.contactAddress || '10009 Mount Tabor Road, City, Odessa Missouri, United States';
+
+  const bgColor = settings?.bgColor || '#FFFFFF';
+  const textColor = settings?.textColor || '#0F172A';
+  const accentColor = settings?.accentColor || '#f97316';
+
+  const titleWords = contactTitle.split(' ');
+  const lastWord = titleWords.pop();
+  const titleMain = titleWords.join(' ');
+
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: bgColor, color: textColor }}>
       <Navbar />
       <div className="flex-grow pt-24 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
         <div className="text-center mb-16">
-          <h1 className="text-5xl font-extrabold text-slate-900 mb-6">Get in <span className="text-[#f97316]">Touch</span></h1>
-          <p className="text-slate-500 text-lg max-w-2xl mx-auto">Have questions about our platform? We're here to help.</p>
+          <h1 className="text-5xl font-extrabold mb-6" style={{ color: textColor }}>
+            {titleMain}{' '}
+            <span style={{ color: accentColor }}>{lastWord}</span>
+          </h1>
+          <p className="opacity-80 text-lg max-w-2xl mx-auto" style={{ color: textColor }}>
+            {contactSubtitle}
+          </p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-16 max-w-5xl mx-auto">
           <div className="space-y-8">
-            <h2 className="text-3xl font-bold text-slate-900 mb-8">Contact Information</h2>
+            <h2 className="text-3xl font-bold mb-8" style={{ color: textColor }}>Contact Information</h2>
             
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center shrink-0">
-                <Mail className="text-[#f97316] w-6 h-6" />
+              <div 
+                className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
+                style={{ backgroundColor: `${accentColor}15` }}
+              >
+                <Mail className="w-6 h-6" style={{ color: accentColor }} />
               </div>
               <div>
-                <h3 className="font-bold text-slate-900 text-lg mb-1">Email Us</h3>
-                <a href="mailto:info@shnoor.com" className="text-slate-500 hover:text-[#f97316] transition-colors">info@shnoor.com</a>
+                <h3 className="font-bold text-lg mb-1" style={{ color: textColor }}>Email Us</h3>
+                <a href={`mailto:${contactEmail}`} className="opacity-70 hover:underline" style={{ color: textColor }}>{contactEmail}</a>
               </div>
             </div>
 
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center shrink-0">
-                <Phone className="text-[#f97316] w-6 h-6" />
+              <div 
+                className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
+                style={{ backgroundColor: `${accentColor}15` }}
+              >
+                <Phone className="w-6 h-6" style={{ color: accentColor }} />
               </div>
               <div>
-                <h3 className="font-bold text-slate-900 text-lg mb-1">Call Us</h3>
-                <p className="text-slate-500">+91-9429694298</p>
-                <p className="text-slate-500">+91-9041914601</p>
+                <h3 className="font-bold text-lg mb-1" style={{ color: textColor }}>Call Us</h3>
+                <p className="opacity-70" style={{ color: textColor }}>{contactPhone1}</p>
+                {contactPhone2 && <p className="opacity-70" style={{ color: textColor }}>{contactPhone2}</p>}
               </div>
             </div>
 
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center shrink-0">
-                <MapPin className="text-[#f97316] w-6 h-6" />
+              <div 
+                className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
+                style={{ backgroundColor: `${accentColor}15` }}
+              >
+                <MapPin className="w-6 h-6" style={{ color: accentColor }} />
               </div>
               <div>
-                <h3 className="font-bold text-slate-900 text-lg mb-1">Visit Us</h3>
-                <p className="text-slate-500 leading-relaxed">
-                  10009 Mount Tabor Road, City,<br />Odessa Missouri,<br />United States
+                <h3 className="font-bold text-lg mb-1" style={{ color: textColor }}>Visit Us</h3>
+                <p className="opacity-70 leading-relaxed whitespace-pre-line" style={{ color: textColor }}>
+                  {contactAddress}
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100">
+          <div 
+            className="p-8 rounded-3xl border"
+            style={{ backgroundColor: `${textColor}05`, borderColor: `${textColor}15` }}
+          >
             <form className="space-y-6">
               <div>
-                <label className="block text-sm font-bold text-slate-900 mb-2">Full Name</label>
-                <input type="text" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#0F172A] bg-white" placeholder="John Doe" />
+                <label className="block text-sm font-bold mb-2" style={{ color: textColor }}>Full Name</label>
+                <input 
+                  type="text" 
+                  className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 bg-white" 
+                  style={{ borderColor: `${textColor}20`, focusRingColor: accentColor }}
+                  placeholder="John Doe" 
+                />
               </div>
               <div>
-                <label className="block text-sm font-bold text-slate-900 mb-2">Email Address</label>
-                <input type="email" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#0F172A] bg-white" placeholder="john@example.com" />
+                <label className="block text-sm font-bold mb-2" style={{ color: textColor }}>Email Address</label>
+                <input 
+                  type="email" 
+                  className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 bg-white" 
+                  style={{ borderColor: `${textColor}20`, focusRingColor: accentColor }}
+                  placeholder="john@example.com" 
+                />
               </div>
               <div>
-                <label className="block text-sm font-bold text-slate-900 mb-2">Message</label>
-                <textarea rows="4" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#0F172A] bg-white resize-none" placeholder="How can we help you?"></textarea>
+                <label className="block text-sm font-bold mb-2" style={{ color: textColor }}>Message</label>
+                <textarea 
+                  rows="4" 
+                  className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 bg-white resize-none" 
+                  style={{ borderColor: `${textColor}20`, focusRingColor: accentColor }}
+                  placeholder="How can we help you?"
+                />
               </div>
-              <button type="button" className="w-full bg-[#0F172A] hover:bg-slate-800 text-white px-6 py-4 rounded-xl font-bold text-lg transition-all shadow-md">
+              <button 
+                type="button" 
+                className="w-full text-white px-6 py-4 rounded-xl font-bold text-lg transition-all shadow-md hover:opacity-90"
+                style={{ backgroundColor: accentColor }}
+              >
                 Send Message
               </button>
             </form>

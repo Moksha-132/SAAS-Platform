@@ -6,20 +6,100 @@ import { Link, useNavigate } from 'react-router-dom';
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const stored = localStorage.getItem('syncsaas_website_settings');
+  const settings = stored ? JSON.parse(stored) : null;
+
+  const loginTitle = settings?.loginTitle || 'Welcome Back';
+  const loginSubtitle = settings?.loginSubtitle || 'Log in to manage your software and subscriptions.';
+
+  const bgColor = settings?.bgColor || '#FFFFFF';
+  const textColor = settings?.textColor || '#0F172A';
+  const accentColor = settings?.accentColor || '#f97316';
+
+  const titleWords = loginTitle.split(' ');
+  const lastWord = titleWords.pop();
+  const titleMain = titleWords.join(' ');
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (email === 'admin@syncsaas.com') {
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('syncsaas_token', data.token);
+        localStorage.setItem('syncsaas_user', JSON.stringify(data.user));
+        
+        alert(`Welcome back! Logged in as ${data.user.role}.`);
+        
+        if (data.user.role === 'admin') {
+          navigate('/admin-dashboard');
+        } else if (data.user.role === 'manager') {
+          if (!data.user.isApproved && !data.user.paymentCompleted) {
+            navigate(`/manager-pending?email=${encodeURIComponent(data.user.email)}`);
+          } else {
+            navigate('/manager-dashboard');
+          }
+        } else {
+          navigate('/user-dashboard');
+        }
+        setIsLoading(false);
+        return;
+      } else {
+        alert(data.message || 'Invalid credentials');
+        setIsLoading(false);
+        return;
+      }
+    } catch (apiError) {
+      console.warn('Backend API connection failed, falling back to LocalStorage simulation:', apiError.message);
+    }
+
+    const defaultAccounts = [
+      { firstName: 'Super', lastName: 'Admin', email: 'admin@syncsaas.com', password: 'admin123', role: 'admin', status: 'active', paid: false },
+      { firstName: 'Alex', lastName: 'Manager', email: 'manager@syncsaas.com', password: 'manager123', role: 'manager', status: 'active', paid: true, domain: 'alex.syncsaas.com' },
+      { firstName: 'John', lastName: 'User', email: 'user@company.com', password: 'user123', role: 'user', status: 'active', paid: false }
+    ];
+
+    const existingAccounts = JSON.parse(localStorage.getItem('syncsaas_accounts')) || defaultAccounts;
+    const matchedAccount = existingAccounts.find(
+      acc => acc.email.toLowerCase() === email.toLowerCase() && acc.password === password
+    );
+
+    setIsLoading(false);
+
+    if (!matchedAccount) {
+      alert('Invalid email or password (offline verification)');
+      return;
+    }
+
+    localStorage.setItem('syncsaas_user', JSON.stringify({
+      email: matchedAccount.email,
+      role: matchedAccount.role,
+      firstName: matchedAccount.firstName,
+      isApproved: matchedAccount.status === 'active',
+      paymentCompleted: matchedAccount.paid
+    }));
+
+    if (matchedAccount.role === 'admin') {
       navigate('/admin-dashboard');
-    } else if (email === 'manager@syncsaas.com') {
-      navigate('/manager-dashboard');
-    } else if (email === 'user@company.com') {
-      navigate('/user-dashboard');
-    } else if (email && password) {
-      navigate('/user-dashboard');
+    } else if (matchedAccount.role === 'manager') {
+      if (matchedAccount.status === 'pending') {
+        navigate(`/manager-pending?email=${encodeURIComponent(matchedAccount.email)}`);
+      } else {
+        navigate('/manager-dashboard');
+      }
     } else {
-      alert('Please enter email and password');
+      navigate('/user-dashboard');
     }
   };
 
@@ -37,71 +117,94 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: bgColor, color: textColor }}>
       <Navbar />
       <div className="flex-grow pt-24 pb-20 px-4 sm:px-6 lg:px-8 w-full flex items-center justify-center">
         <div className="w-full max-w-md">
           <div className="text-center mb-10">
-            <h1 className="text-4xl font-extrabold text-slate-900 mb-3">Welcome <span className="text-[#f97316]">Back</span></h1>
-            <p className="text-slate-500">Log in to manage your software and subscriptions.</p>
+            <h1 className="text-4xl font-extrabold mb-3" style={{ color: textColor }}>
+              {titleMain}{' '}
+              <span style={{ color: accentColor }}>{lastWord}</span>
+            </h1>
+            <p className="opacity-80" style={{ color: textColor }}>{loginSubtitle}</p>
           </div>
           
-          <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl shadow-slate-100 mb-6">
+          <div 
+            className="p-8 rounded-3xl border shadow-xl"
+            style={{ backgroundColor: bgColor, borderColor: `${textColor}15` }}
+          >
             <form className="space-y-6" onSubmit={handleLogin}>
               <div>
-                <label className="block text-sm font-bold text-slate-900 mb-2">Email Address</label>
+                <label className="block text-sm font-bold mb-2" style={{ color: textColor }}>Email Address</label>
                 <input 
                   type="email" 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#0F172A]" 
+                  className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 bg-white" 
+                  style={{ borderColor: `${textColor}20`, focusRingColor: accentColor }}
                   placeholder="you@company.com" 
+                  required
                 />
               </div>
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <label className="block text-sm font-bold text-slate-900">Password</label>
-                  <a href="#" className="text-sm text-[#f97316] hover:underline font-medium">Forgot password?</a>
+                  <label className="block text-sm font-bold" style={{ color: textColor }}>Password</label>
+                  <a href="#" className="text-sm hover:underline font-medium" style={{ color: accentColor }}>Forgot password?</a>
                 </div>
                 <input 
                   type="password" 
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#0F172A]" 
+                  className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 bg-white" 
+                  style={{ borderColor: `${textColor}20`, focusRingColor: accentColor }}
                   placeholder="••••••••" 
+                  required
                 />
               </div>
-              <button type="submit" className="w-full bg-[#0F172A] hover:bg-slate-800 text-white px-6 py-4 rounded-xl font-bold text-lg transition-all shadow-md">
-                Sign In
+              <button 
+                type="submit" 
+                disabled={isLoading}
+                className="w-full text-white px-6 py-4 rounded-xl font-bold text-lg transition-all shadow-md hover:opacity-90 disabled:opacity-50"
+                style={{ backgroundColor: accentColor }}
+              >
+                {isLoading ? 'Signing In...' : 'Sign In'}
               </button>
             </form>
             
             <div className="mt-8 text-center">
-              <p className="text-slate-500 text-sm">
-                Don't have an account? <Link to="/register" className="text-[#0F172A] font-bold hover:underline">Register here</Link>
+              <p className="text-sm opacity-80" style={{ color: textColor }}>
+                Don't have an account? <Link to="/register" className="font-bold hover:underline" style={{ color: accentColor }}>Register here</Link>
               </p>
             </div>
           </div>
 
-          {/* Demo Credentials Box */}
-          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 text-center">
-            <h3 className="text-sm font-bold text-slate-900 mb-4 uppercase tracking-wider">Demo Credentials</h3>
+          <div 
+            className="border rounded-2xl p-6 text-center mt-6"
+            style={{ backgroundColor: `${textColor}05`, borderColor: `${textColor}15` }}
+          >
+            <h3 className="text-sm font-bold mb-4 uppercase tracking-wider" style={{ color: textColor }}>Demo Credentials</h3>
             <div className="flex flex-col gap-3">
               <button 
+                type="button"
                 onClick={() => fillCredentials('admin')}
-                className="text-sm bg-white border border-slate-200 px-4 py-2 rounded-lg hover:border-[#f97316] hover:text-[#f97316] transition-colors"
+                className="text-sm bg-white border px-4 py-2 rounded-lg transition-colors hover:opacity-90"
+                style={{ borderColor: `${textColor}15`, color: textColor }}
               >
                 <strong>Admin:</strong> admin@syncsaas.com / admin123
               </button>
               <button 
+                type="button"
                 onClick={() => fillCredentials('manager')}
-                className="text-sm bg-white border border-slate-200 px-4 py-2 rounded-lg hover:border-[#f97316] hover:text-[#f97316] transition-colors"
+                className="text-sm bg-white border px-4 py-2 rounded-lg transition-colors hover:opacity-90"
+                style={{ borderColor: `${textColor}15`, color: textColor }}
               >
                 <strong>Manager:</strong> manager@syncsaas.com / manager123
               </button>
               <button 
+                type="button"
                 onClick={() => fillCredentials('user')}
-                className="text-sm bg-white border border-slate-200 px-4 py-2 rounded-lg hover:border-[#f97316] hover:text-[#f97316] transition-colors"
+                className="text-sm bg-white border px-4 py-2 rounded-lg transition-colors hover:opacity-90"
+                style={{ borderColor: `${textColor}15`, color: textColor }}
               >
                 <strong>User:</strong> user@company.com / user123
               </button>

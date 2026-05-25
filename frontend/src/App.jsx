@@ -12,10 +12,12 @@ import AdminCompanies from './pages/AdminCompanies';
 import AdminManagers from './pages/AdminManagers';
 import AdminSoftware from './pages/AdminSoftware';
 import AdminAnalytics from './pages/AdminAnalytics';
+import AdminSettings from './pages/AdminSettings';
 import ManagerDashboard from './pages/ManagerDashboard';
 import ManagerSoftware from './pages/ManagerSoftware';
 import ManagerChat from './pages/ManagerChat';
 import ManagerSales from './pages/ManagerSales';
+import ManagerPending from './pages/ManagerPending';
 import UserDashboard from './pages/UserDashboard';
 
 function App() {
@@ -29,6 +31,7 @@ function App() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/manager-pending" element={<ManagerPending />} />
         
         {/* Admin Routes */}
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
@@ -36,6 +39,7 @@ function App() {
         <Route path="/admin-managers" element={<AdminManagers />} />
         <Route path="/admin-software" element={<AdminSoftware />} />
         <Route path="/admin-analytics" element={<AdminAnalytics />} />
+        <Route path="/admin-settings" element={<AdminSettings />} />
 
         {/* Manager Routes */}
         <Route path="/manager-dashboard" element={<ManagerDashboard />} />
