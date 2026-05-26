@@ -56,6 +56,7 @@ export const initializeDatabase = async () => {
     } else {
       console.log('PostgreSQL tables verified. Database is operational.');
     }
+    await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS monthly_spend DECIMAL(10, 2) DEFAULT 49.00;');
     await pool.query('ALTER TABLE software ADD COLUMN IF NOT EXISTS deployment_link VARCHAR(555);');
     await pool.query('ALTER TABLE software ADD COLUMN IF NOT EXISTS document_url VARCHAR(555);');
     await pool.query('ALTER TABLE chats ADD COLUMN IF NOT EXISTS file_url VARCHAR(555);');
