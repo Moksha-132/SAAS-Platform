@@ -17,6 +17,7 @@ router.get('/companies', getRegisteredCompanies);
 router.patch('/managers/:id/approve', approveManager);
 router.patch('/managers/:id', updateManagerDetails);
 router.delete('/managers/:id', deleteUser);
+router.delete('/companies/:id', deleteUser);
 router.post('/software', registerSoftware);
 router.delete('/software/:id', removeSoftware);
 router.post('/settings', saveSettings);

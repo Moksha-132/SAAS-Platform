@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AdminSidebar from '../components/AdminSidebar';
-import { Edit2, Building2, Search } from 'lucide-react';
+import { Edit2, Building2, Search, Trash2 } from 'lucide-react';
 
 const AdminCompanies = () => {
   const [companies, setCompanies] = useState([]);
@@ -20,7 +20,7 @@ const AdminCompanies = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const loadCompanies = async () => {
-    const token = localStorage.getItem('syncsaas_token');
+    const token = localStorage.getItem('syncsaas_token') || localStorage.getItem('token');
 
     if (token) {
       try {
@@ -146,7 +146,7 @@ const AdminCompanies = () => {
     if (!editCompanyName || !editEmail) return;
 
     setIsSubmitting(true);
-    const token = localStorage.getItem('syncsaas_token');
+    const token = localStorage.getItem('syncsaas_token') || localStorage.getItem('token');
     const isUUID = selectedCompany.id && typeof selectedCompany.id === 'string' && selectedCompany.id.includes('-');
 
     if (token && selectedCompany.id && isUUID) {
@@ -200,6 +200,47 @@ const AdminCompanies = () => {
     alert('Company details updated (offline mode)');
     setShowEditModal(false);
     setIsSubmitting(false);
+    loadCompanies();
+  };
+
+  const handleDeleteCompany = async (company) => {
+    if (!window.confirm(`Are you sure you want to delete ${company.company_name || 'this company'}?`)) {
+      return;
+    }
+
+    const token = localStorage.getItem('syncsaas_token') || localStorage.getItem('token');
+    const isUUID = company.id && typeof company.id === 'string' && company.id.includes('-');
+
+    if (token && company.id && isUUID) {
+      try {
+        const response = await fetch(`http://localhost:5000/api/admin/companies/${company.id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          alert('Company deleted successfully');
+          loadCompanies();
+          return;
+        }
+      } catch (err) {
+        console.warn(err.message);
+      }
+    }
+
+    // Offline / LocalStorage fallback deletion
+    const accounts = JSON.parse(localStorage.getItem('syncsaas_accounts')) || [];
+    const filtered = accounts.filter(acc => {
+      if (company.id) {
+        return acc.id !== company.id && acc.email.toLowerCase() !== company.email.toLowerCase();
+      }
+      return acc.email.toLowerCase() !== company.email.toLowerCase();
+    });
+
+    localStorage.setItem('syncsaas_accounts', JSON.stringify(filtered));
+    alert('Company deleted (offline mode)');
     loadCompanies();
   };
 
@@ -268,13 +309,20 @@ const AdminCompanies = () => {
                       )}
                     </td>
                     <td className="px-6 py-4 font-bold text-slate-900">${company.monthly_spend || 49}/mo</td>
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-6 py-4 text-right flex items-center justify-end gap-2">
                       <button 
                         onClick={() => handleEditClick(company)}
-                        className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition-colors inline-flex items-center gap-1.5"
+                        className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition-colors inline-flex items-center gap-1.5 cursor-pointer"
                       >
-                        <Edit2 className="w-3 h-3" />
+                        <Edit2 className="w-3.5 h-3.5" />
                         Edit Details
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteCompany(company)}
+                        className="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-2 rounded-xl text-xs font-bold transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        Delete
                       </button>
                     </td>
                   </tr>
