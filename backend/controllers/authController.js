@@ -1,13 +1,12 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
-import { createUser, findUserByEmail, updateManagerPaymentStatus } from '../models/userModel.js';
+import { createUser, findUserByEmail, updateManagerPaymentStatus, updateManagerApproval } from '../models/userModel.js';
 
-// Setup email transporter using user credentials
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST || 'smtp.gmail.com',
   port: parseInt(process.env.EMAIL_PORT || '587'),
-  secure: false, // true for 465, false for other ports
+  secure: false,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
@@ -33,24 +32,40 @@ const sendNotificationEmail = async (to, subject, text, html) => {
   }
 };
 
+const generateToken = (user) => {
+  return jwt.sign(
+    { 
+      id: user.id, 
+      email: user.email, 
+      role: user.role,
+      is_approved: user.is_approved,
+      payment_completed: user.payment_completed
+    },
+    process.env.JWT_SECRET || 'supersecretjwtkey12345',
+    { expiresIn: '30d' }
+  );
+};
+
 export const registerUser = async (req, res, next) => {
   try {
     const { email, password, role, companyName } = req.body;
-    
+
     if (!email || !password || !role) {
-      return res.status(400).json({ message: 'Email, password and role are required.' });
+      return res.status(400).json({ message: 'Email, password, and role are required.' });
+    }
+
+    if (!['user', 'manager'].includes(role)) {
+      return res.status(400).json({ message: 'Invalid role. Choose user or manager.' });
     }
 
     const existingUser = await findUserByEmail(email);
     if (existingUser) {
-      return res.status(400).json({ message: 'User with this email already exists.' });
+      return res.status(400).json({ message: 'An account with that email address already exists.' });
     }
 
-    // Hash password
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    // Save to Database
     const newUser = await createUser({
       email,
       passwordHash,
@@ -58,7 +73,6 @@ export const registerUser = async (req, res, next) => {
       companyName
     });
 
-    // Send email notification upon registration
     let emailSubject = 'Welcome to SyncSaaS Platform!';
     let emailText = `Hello! Thank you for registering at SyncSaaS as a ${role}.`;
     let emailHtml = `<p>Hello!</p><p>Thank you for registering at <strong>SyncSaaS</strong> as a <strong>${role}</strong>.</p>`;
@@ -71,8 +85,13 @@ export const registerUser = async (req, res, next) => {
 
     await sendNotificationEmail(email, emailSubject, emailText, emailHtml);
 
+    const token = generateToken(newUser);
+
     res.status(201).json({
-      message: 'User registered successfully',
+      success: true,
+      message: role === 'manager' 
+        ? 'Manager account registered successfully. Requires payment activation or admin approval.' 
+        : 'User account registered and activated successfully.',
       user: {
         id: newUser.id,
         email: newUser.email,
@@ -80,7 +99,8 @@ export const registerUser = async (req, res, next) => {
         isApproved: newUser.is_approved,
         paymentCompleted: newUser.payment_completed,
         companyName: newUser.company_name
-      }
+      },
+      token
     });
   } catch (error) {
     next(error);
@@ -105,21 +125,10 @@ export const loginUser = async (req, res, next) => {
       return res.status(401).json({ message: 'Invalid email or password.' });
     }
 
-    // Create JWT Token claims matching middleware expectations
-    const token = jwt.sign(
-      {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-        is_approved: user.is_approved,
-        payment_completed: user.payment_completed
-      },
-      process.env.JWT_SECRET || 'supersecretjwtkey12345',
-      { expiresIn: '7d' }
-    );
+    const token = generateToken(user);
 
     res.json({
-      token,
+      success: true,
       user: {
         id: user.id,
         email: user.email,
@@ -127,7 +136,8 @@ export const loginUser = async (req, res, next) => {
         isApproved: user.is_approved,
         paymentCompleted: user.payment_completed,
         companyName: user.company_name
-      }
+      },
+      token
     });
   } catch (error) {
     next(error);
@@ -136,42 +146,41 @@ export const loginUser = async (req, res, next) => {
 
 export const processManagerPayment = async (req, res, next) => {
   try {
-    const { email } = req.body;
+    const { email, managerId } = req.body;
 
-    if (!email) {
-      return res.status(400).json({ message: 'Email is required for manager payment activation.' });
+    let user = null;
+    if (email) {
+      user = await findUserByEmail(email);
+    } else if (managerId) {
+      const { findUserById } = await import('../models/userModel.js');
+      user = await findUserById(managerId);
     }
 
-    const user = await findUserByEmail(email);
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: 'Manager account not found.' });
     }
 
     if (user.role !== 'manager') {
       return res.status(400).json({ message: 'Account is not registered as a manager.' });
     }
 
-    // Set payment completed and automatically approve manager since they paid
-    await updateManagerPaymentStatus(user.id, true);
-    
-    // Run updateManagerApproval helper query directly
-    import('../config/db.js').then(async (dbModule) => {
-      await dbModule.default.query(
-        "UPDATE users SET is_approved = true, updated_at = NOW() WHERE id = $1",
-        [user.id]
-      );
-    });
+    const updated = await updateManagerPaymentStatus(user.id, true);
+    await updateManagerApproval(user.id, true);
 
     await sendNotificationEmail(
-      email,
+      user.email,
       'SyncSaaS Manager Account Activated!',
-      'Your payment was received. Your manager portal access is now fully active.',
+      'Your payment of $99 was received. Your manager portal access is now fully active.',
       '<p>Your payment of $99 was received. Your manager portal access is now <strong>fully active</strong>.</p>'
     );
 
     res.json({
-      message: 'Manager activation payment processed successfully. Account is now active.',
-      email
+      success: true,
+      message: 'Manager activation payment completed successfully.',
+      manager: {
+        ...updated,
+        is_approved: true
+      }
     });
   } catch (error) {
     next(error);

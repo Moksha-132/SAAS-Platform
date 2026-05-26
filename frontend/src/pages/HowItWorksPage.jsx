@@ -2,6 +2,7 @@ import React from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { UserPlus, Store, MessageSquare, Rocket } from 'lucide-react';
+import { useWebsiteSettings } from '../hooks/useWebsiteSettings';
 
 const StepCard = ({ number, icon: Icon, title, desc, bgColor, textColor, accentColor }) => (
   <div 
@@ -23,8 +24,7 @@ const StepCard = ({ number, icon: Icon, title, desc, bgColor, textColor, accentC
 );
 
 const HowItWorksPage = () => {
-  const stored = localStorage.getItem('syncsaas_website_settings');
-  const settings = stored ? JSON.parse(stored) : null;
+  const settings = useWebsiteSettings();
 
   const title = settings?.howItWorksTitle || 'How SyncSaaS Works.';
   const subtitle = settings?.howItWorksSubtitle || 'A seamless ecosystem connecting software owners, dedicated managers, and businesses looking for the perfect tools.';

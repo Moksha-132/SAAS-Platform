@@ -6,3 +6,5 @@ dist/
 *.log
 .DS_Store
 Thumbs.db
+scratch/
+backend/check_settings.js

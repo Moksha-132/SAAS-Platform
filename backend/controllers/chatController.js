@@ -1,21 +1,23 @@
-import { saveChatMessage, fetchConversationHistory, markMessagesAsRead } from '../models/chatModel.js';
+import { saveChatMessage, fetchConversationHistory, markMessagesAsRead, findChatById } from '../models/chatModel.js';
 import { createMeeting, fetchMeetingsForUser } from '../models/meetingModel.js';
+import { fetchChatPartners, findUserById } from '../models/userModel.js';
 
 export const getChatHistory = async (req, res, next) => {
   try {
-    const { withUser } = req.query;
     const userId = req.user.id;
+    const { partnerId } = req.params;
 
-    if (!withUser) {
-      return res.status(400).json({ message: 'withUser query parameter is required.' });
+    if (!partnerId) {
+      return res.status(400).json({ message: 'Conversation partner ID is required.' });
     }
 
-    const history = await fetchConversationHistory(userId, withUser);
-    
-    // Mark received messages as read
-    await markMessagesAsRead(withUser, userId);
+    const history = await fetchConversationHistory(userId, partnerId);
+    await markMessagesAsRead(partnerId, userId);
 
-    res.json(history);
+    res.json({
+      success: true,
+      history
+    });
   } catch (error) {
     next(error);
   }
@@ -23,30 +25,31 @@ export const getChatHistory = async (req, res, next) => {
 
 export const sendMessage = async (req, res, next) => {
   try {
-    const { receiverId, message } = req.body;
     const senderId = req.user.id;
+    const { receiverId, message, fileUrl, fileName } = req.body;
 
-    if (!receiverId || !message) {
-      return res.status(400).json({ message: 'Receiver ID and message content are required.' });
+    if (!receiverId || ((!message || message.trim() === '') && !fileUrl)) {
+      return res.status(400).json({ message: 'Receiver ID and either a message or a file are required.' });
     }
 
-    const savedMessage = await saveChatMessage({
-      senderId,
-      receiverId,
-      message
-    });
+    const savedMsg = await saveChatMessage({ senderId, receiverId, message, fileUrl, fileName });
+    const sender = await findUserById(senderId);
+    const senderName = sender ? (sender.company_name || (sender.role === 'admin' ? 'Admin' : sender.email)) : 'User';
 
-    // Real-time socket dispatch
     if (req.io) {
-      req.io.to(receiverId).emit('receive_message', savedMessage);
+      req.io.to(receiverId).emit('receive_message', savedMsg);
       req.io.to(receiverId).emit('notification', {
         type: 'chat',
         senderId,
-        message: `New message: "${message.substring(0, 30)}..."`
+        senderName,
+        message: fileUrl ? `Sent a file: "${fileName || 'attachment'}"` : `New message: "${message.substring(0, 30)}${message.length > 30 ? '...' : ''}"`
       });
     }
 
-    res.status(201).json(savedMessage);
+    res.status(201).json({
+      success: true,
+      chat: savedMsg
+    });
   } catch (error) {
     next(error);
   }
@@ -56,19 +59,40 @@ export const scheduleMeeting = async (req, res, next) => {
   try {
     const { chatId, title, scheduledTime, meetingLink } = req.body;
 
-    if (!title || !scheduledTime || !meetingLink) {
-      return res.status(400).json({ message: 'Title, scheduled time, and meeting link are required.' });
+    if (!chatId || !title || !scheduledTime || !meetingLink) {
+      return res.status(400).json({ message: 'All meeting details (chatId, title, scheduledTime, meetingLink) are required.' });
+    }
+
+    const chatDetails = await findChatById(chatId);
+    if (!chatDetails) {
+      return res.status(404).json({ message: 'The referenced chat record could not be found.' });
     }
 
     const meeting = await createMeeting({
-      chatId: chatId || null,
+      chatId,
       title,
       scheduledTime,
       meetingLink
     });
 
+    const notifyId = chatDetails.sender_id === req.user.id ? chatDetails.receiver_id : chatDetails.sender_id;
+
+    if (req.io) {
+      req.io.to(notifyId).emit('meeting_scheduled', {
+        meeting,
+        message: `A meeting "${title}" has been scheduled for ${new Date(scheduledTime).toLocaleString()}`
+      });
+
+      req.io.to(notifyId).emit('notification', {
+        type: 'meeting',
+        senderId: req.user.id,
+        message: `Meeting Scheduled: "${title}"`
+      });
+    }
+
     res.status(201).json({
-      message: 'Meeting scheduled successfully.',
+      success: true,
+      message: 'Meeting scheduled successfully and calendar updated.',
       meeting
     });
   } catch (error) {
@@ -79,8 +103,28 @@ export const scheduleMeeting = async (req, res, next) => {
 export const getMeetings = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const list = await fetchMeetingsForUser(userId);
-    res.json(list);
+    const meetings = await fetchMeetingsForUser(userId);
+
+    res.json({
+      success: true,
+      meetings
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getChatPartners = async (req, res, next) => {
+  try {
+    const role = req.user.role;
+    const userId = req.user.id;
+    
+    const partners = await fetchChatPartners(userId, role);
+    
+    res.json({
+      success: true,
+      partners
+    });
   } catch (error) {
     next(error);
   }

@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { UserPlus, Store, MessageSquare, Rocket } from 'lucide-react';
+import { UserPlus, Store, MessageSquare, Rocket, Search, ShoppingCart, ExternalLink, Mail, Phone, MapPin } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { useWebsiteSettings } from '../hooks/useWebsiteSettings';
 
 const LandingPage = () => {
-  const stored = localStorage.getItem('syncsaas_website_settings');
-  const settings = stored ? JSON.parse(stored) : null;
+  const settings = useWebsiteSettings();
 
   const heroTitle = settings?.heroTitle || 'The Ultimate SaaS Hub for modern teams.';
   const heroSubtitle = settings?.heroSubtitle || 'Connect with top-tier software providers, manage subscriptions, and scale your business with ease. Managers represent the best software, and you reap the benefits.';
@@ -18,6 +18,20 @@ const LandingPage = () => {
   const textColor = settings?.textColor || '#0F172A';
   const accentColor = settings?.accentColor || '#f97316';
 
+  const contactTitle = settings?.contactTitle || 'Get in Touch';
+  const contactSubtitle = settings?.contactSubtitle || "Have questions about our platform? We're here to help.";
+  const contactEmail = settings?.contactEmail || 'info@shnoor.com';
+  const contactPhone1 = settings?.contactPhone1 || '+91-9429694298';
+  const contactPhone2 = settings?.contactPhone2 || '+91-9041914601';
+  const contactAddress = settings?.contactAddress || '10009 Mount Tabor Road, City, Odessa Missouri, United States';
+
+  const defaultFeatures = [
+    { id: 'feat-1', title: 'Admin Analytics', desc: "Complete oversight of your software's performance, total revenue, company growth, and global reach in one seamless dashboard." },
+    { id: 'feat-2', title: 'Manager Portals', desc: 'Represent top software, chat directly with clients, schedule meetings seamlessly, and earn commissions on closed deals.' },
+    { id: 'feat-3', title: 'Instant Discovery', desc: 'Users can search, compare, and instantly subscribe to powerful tools with one-click checkouts and flexible billing plans.' }
+  ];
+  const features = settings?.features || defaultFeatures;
+
   const titleWords = heroTitle.split(' ');
   const lastWord = titleWords.pop();
   const titleMain = titleWords.join(' ');
@@ -25,6 +39,9 @@ const LandingPage = () => {
   const aboutWords = aboutTitle.split(' ');
   const lastAboutWord = aboutWords.pop();
   const aboutMain = aboutWords.join(' ');
+
+  const [softwareList, setSoftwareList] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -46,6 +63,30 @@ const LandingPage = () => {
       window.removeEventListener('hashchange', handleHashChange);
     };
   }, []);
+
+  useEffect(() => {
+    const fetchSoftware = async () => {
+      try {
+        const url = searchQuery 
+          ? `http://localhost:5000/api/users/software?search=${encodeURIComponent(searchQuery)}`
+          : 'http://localhost:5000/api/users/software';
+        
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.success) {
+          setSoftwareList(data.software);
+        }
+      } catch (err) {
+        console.error("Failed to fetch software marketplace:", err);
+      }
+    };
+    
+    const timerId = setTimeout(() => {
+      fetchSoftware();
+    }, 300);
+
+    return () => clearTimeout(timerId);
+  }, [searchQuery]);
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: bgColor, color: textColor }}>
@@ -86,19 +127,83 @@ const LandingPage = () => {
             </h2>
           </div>
           <div className="grid md:grid-cols-3 gap-8 text-left">
-            <div className="p-8 rounded-2xl border border-slate-200/50 shadow-sm hover:shadow-md transition-shadow" style={{ backgroundColor: bgColor }}>
-              <h3 className="text-xl font-bold mb-3" style={{ color: textColor }}>Admin Analytics</h3>
-              <p className="leading-relaxed opacity-70" style={{ color: textColor }}>Complete oversight of your software's performance, total revenue, company growth, and global reach in one seamless dashboard.</p>
-            </div>
-            <div className="p-8 rounded-2xl border border-slate-200/50 shadow-sm hover:shadow-md transition-shadow" style={{ backgroundColor: bgColor }}>
-              <h3 className="text-xl font-bold mb-3" style={{ color: textColor }}>Manager Portals</h3>
-              <p className="leading-relaxed opacity-70" style={{ color: textColor }}>Represent top software, chat directly with clients, schedule meetings seamlessly, and earn commissions on closed deals.</p>
-            </div>
-            <div className="p-8 rounded-2xl border border-slate-200/50 shadow-sm hover:shadow-md transition-shadow" style={{ backgroundColor: bgColor }}>
-              <h3 className="text-xl font-bold mb-3" style={{ color: textColor }}>Instant Discovery</h3>
-              <p className="leading-relaxed opacity-70" style={{ color: textColor }}>Users can search, compare, and instantly subscribe to powerful tools with one-click checkouts and flexible billing plans.</p>
-            </div>
+            {features.map((feat) => (
+              <div key={feat.id} className="p-8 rounded-2xl border border-slate-200/50 shadow-sm hover:shadow-md transition-shadow" style={{ backgroundColor: bgColor }}>
+                <h3 className="text-xl font-bold mb-3" style={{ color: textColor }}>{feat.title}</h3>
+                <p className="leading-relaxed opacity-70" style={{ color: textColor }}>{feat.desc}</p>
+              </div>
+            ))}
           </div>
+        </div>
+      </div>
+
+      <div id="marketplace" className="py-24 border-b border-slate-100/30" style={{ backgroundColor: bgColor }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4" style={{ color: textColor }}>
+              Software <span style={{ color: accentColor }}>Marketplace.</span>
+            </h2>
+            <p className="text-lg max-w-2xl mx-auto opacity-70" style={{ color: textColor }}>
+              Discover the perfect tools to accelerate your business growth.
+            </p>
+          </div>
+
+          <div className="relative max-w-xl mx-auto mb-12">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
+            <input 
+              type="text" 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search for software tools..." 
+              className="w-full pl-12 pr-4 py-3 bg-slate-50 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#b45309] text-sm text-slate-800"
+            />
+          </div>
+
+          {softwareList.length === 0 ? (
+            <div className="text-center py-16 bg-slate-50/50 border border-slate-200/40 rounded-3xl">
+              <h3 className="text-lg font-bold text-slate-600 mb-1">No software found</h3>
+              <p className="text-sm text-slate-400">There are currently no products hosted in the marketplace matching your search.</p>
+            </div>
+          ) : (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {softwareList.map(software => (
+                <div key={software.id} className="border border-slate-200/60 rounded-2xl p-6 bg-white hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-left flex flex-col h-full shadow-sm">
+                  <div className="w-full h-40 bg-slate-50 rounded-xl mb-6 flex items-center justify-center border border-slate-100">
+                    <span className="text-slate-400 font-bold text-xl">{software.name}</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-900 mb-2">{software.name}</h3>
+                  <p className="text-sm text-slate-500 mb-6 flex-grow line-clamp-3">{software.description}</p>
+                  
+                  <div className="space-y-2 mb-6 border-t border-slate-100 pt-4">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-slate-500 font-medium">Monthly Plan:</span>
+                      <span className="font-bold text-slate-900">${software.monthly_price}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-slate-500 font-medium">Yearly Plan:</span>
+                      <span className="font-bold text-[#b45309]">${software.yearly_price}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 mt-auto">
+                    <a href="/login" className="flex-1 bg-[#0f172a] hover:bg-slate-800 text-white py-3 rounded-xl font-bold transition-colors shadow-md flex items-center justify-center gap-2 text-center text-sm">
+                      <ShoppingCart className="w-4 h-4" /> Buy Plan
+                    </a>
+                    {software.deployment_link && (
+                      <a 
+                        href={software.deployment_link.startsWith('http') ? software.deployment_link : `https://${software.deployment_link}`}
+                        target="_blank" rel="noreferrer"
+                        className="bg-white border-2 border-slate-200 hover:border-[#b45309] hover:text-[#b45309] text-slate-500 p-3 rounded-xl transition-colors"
+                        title="View Deployment"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -137,6 +242,9 @@ const LandingPage = () => {
           </div>
         </div>
       </div>
+
+
+
 
       <div className="py-24 text-center" style={{ backgroundColor: bgColor }}>
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">

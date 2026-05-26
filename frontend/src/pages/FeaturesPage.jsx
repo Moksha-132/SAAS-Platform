@@ -2,6 +2,7 @@ import React from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { BarChart3, Users, Zap, ShieldCheck, MessageSquare, Calendar } from 'lucide-react';
+import { useWebsiteSettings } from '../hooks/useWebsiteSettings';
 
 const FeatureDetailCard = ({ icon: Icon, title, desc }) => (
   <div className="p-8 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition-shadow text-left flex flex-col">
@@ -14,6 +15,20 @@ const FeatureDetailCard = ({ icon: Icon, title, desc }) => (
 );
 
 const FeaturesPage = () => {
+  const settings = useWebsiteSettings();
+
+  const defaultFeatures = [
+    { id: 'feat-1', title: "Advanced Analytics", desc: "Owners get real-time insights into total companies registered, monthly revenue growth, and platform engagement." },
+    { id: 'feat-2', title: "Manager Workflows", desc: "Dedicated portals for managers with their own domains to host SaaS and interact directly with potential clients." },
+    { id: 'feat-3', title: "Instant Subscriptions", desc: "Frictionless checkout experience allowing users to subscribe monthly or yearly with instant access." },
+    { id: 'feat-4', title: "Real-time Chat", desc: "Built-in communication platform bridging the gap between users seeking software and managers providing it." },
+    { id: 'feat-5', title: "In-Chat Scheduling", desc: "Seamlessly propose, negotiate, and lock in meeting times without ever leaving the chat interface." },
+    { id: 'feat-6', title: "Secure Ecosystem", desc: "Robust OAuth and Firebase integration ensuring your data, chats, and payment information remain strictly confidential." }
+  ];
+
+  const features = settings?.features || defaultFeatures;
+  const icons = [BarChart3, Users, Zap, MessageSquare, Calendar, ShieldCheck];
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Navbar />
@@ -26,36 +41,17 @@ const FeaturesPage = () => {
         </p>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <FeatureDetailCard 
-            icon={BarChart3}
-            title="Advanced Analytics"
-            desc="Owners get real-time insights into total companies registered, monthly revenue growth, and platform engagement."
-          />
-          <FeatureDetailCard 
-            icon={Users}
-            title="Manager Workflows"
-            desc="Dedicated portals for managers with their own domains to host SaaS and interact directly with potential clients."
-          />
-          <FeatureDetailCard 
-            icon={Zap}
-            title="Instant Subscriptions"
-            desc="Frictionless checkout experience allowing users to subscribe monthly or yearly with instant access."
-          />
-          <FeatureDetailCard 
-            icon={MessageSquare}
-            title="Real-time Chat"
-            desc="Built-in communication platform bridging the gap between users seeking software and managers providing it."
-          />
-          <FeatureDetailCard 
-            icon={Calendar}
-            title="In-Chat Scheduling"
-            desc="Seamlessly propose, negotiate, and lock in meeting times without ever leaving the chat interface."
-          />
-          <FeatureDetailCard 
-            icon={ShieldCheck}
-            title="Secure Ecosystem"
-            desc="Robust OAuth and Firebase integration ensuring your data, chats, and payment information remain strictly confidential."
-          />
+          {features.map((feat, idx) => {
+            const Icon = icons[idx % icons.length] || Zap;
+            return (
+              <FeatureDetailCard 
+                key={feat.id}
+                icon={Icon}
+                title={feat.title}
+                desc={feat.desc}
+              />
+            );
+          })}
         </div>
       </div>
       <Footer />

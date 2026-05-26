@@ -2,10 +2,10 @@ import React from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { Mail, Phone, MapPin } from 'lucide-react';
+import { useWebsiteSettings } from '../hooks/useWebsiteSettings';
 
 const ContactPage = () => {
-  const stored = localStorage.getItem('syncsaas_website_settings');
-  const settings = stored ? JSON.parse(stored) : null;
+  const settings = useWebsiteSettings();
 
   const contactTitle = settings?.contactTitle || 'Get in Touch';
   const contactSubtitle = settings?.contactSubtitle || "Have questions about our platform? We're here to help.";

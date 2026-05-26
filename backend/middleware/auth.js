@@ -7,8 +7,6 @@ export const protect = async (req, res, next) => {
     try {
       token = req.headers.authorization.split(' ')[1];
       const decoded = jwt.verify(token, process.env.JWT_SECRET || 'supersecretjwtkey12345');
-
-      // Attach decoded user info to request
       req.user = decoded;
       return next();
     } catch (error) {
@@ -46,7 +44,6 @@ export const adminOrManagerOnly = (req, res, next) => {
   }
 };
 
-// Check if Manager has completed payment or is approved by Admin
 export const isApprovedManager = (req, res, next) => {
   if (req.user && req.user.role === 'manager') {
     if (req.user.is_approved || req.user.payment_completed) {
@@ -56,6 +53,5 @@ export const isApprovedManager = (req, res, next) => {
       message: 'Access denied: Manager account requires Admin approval or Pre-activation payment completion' 
     });
   }
-  // Standard user or admin does not need this approval check
   next();
 };

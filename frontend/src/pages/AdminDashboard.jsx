@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart3, Building2, TrendingUp, Users, Download, Calendar } from 'lucide-react';
 import AdminSidebar from '../components/AdminSidebar';
+import NotificationBell from '../components/NotificationBell';
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
@@ -17,7 +18,7 @@ const AdminDashboard = () => {
   const [rawAccounts, setRawAccounts] = useState([]);
 
   const loadBackendData = async () => {
-    const token = localStorage.getItem('syncsaas_token');
+    const token = localStorage.getItem('syncsaas_token') || localStorage.getItem('token');
     
     if (!token) {
       loadFallbackData();
@@ -145,7 +146,7 @@ const AdminDashboard = () => {
   };
 
   const handleApprove = async (id, email) => {
-    const token = localStorage.getItem('syncsaas_token');
+    const token = localStorage.getItem('syncsaas_token') || localStorage.getItem('token');
 
     if (token) {
       try {
@@ -171,7 +172,7 @@ const AdminDashboard = () => {
     const accounts = JSON.parse(localStorage.getItem('syncsaas_accounts')) || [];
     const updated = accounts.map(acc => {
       if (acc.email.toLowerCase() === email.toLowerCase()) {
-        return { ...acc, status: 'active' };
+        return { ...acc, status: 'active', is_approved: true };
       }
       return acc;
     });
@@ -184,107 +185,128 @@ const AdminDashboard = () => {
     <div className="min-h-screen bg-slate-50 flex">
       <AdminSidebar />
       
-      <div className="flex-grow ml-64 p-8 lg:p-12">
-        <div className="flex justify-between items-center mb-10">
-          <div>
-            <h1 className="text-4xl font-extrabold text-slate-900 mb-2">Platform Overview</h1>
-            <p className="text-slate-500">Welcome back. Here's what's happening across SyncSaaS today.</p>
-          </div>
-          <div className="flex items-center gap-4 relative">
+      <div className="flex-grow ml-64 p-8 lg:p-12 bg-slate-50 min-h-screen">
+        {/* Main Content Wrapper Card */}
+        <div className="bg-white rounded-3xl border border-slate-200 shadow-xl shadow-slate-100 p-8 lg:p-10 max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center pb-8 border-b border-slate-100 mb-10 gap-4">
             <div>
+              <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">Platform Overview</h1>
+              <p className="text-slate-500 font-medium">System status, company statistics, and active metrics for SHNOOR.</p>
+            </div>
+            <div className="flex items-center gap-3 relative">
+              <NotificationBell />
+              
+              <div className="relative">
+                <button 
+                  onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+                  className="bg-white border border-slate-200 text-slate-700 px-4 py-2.5 rounded-xl font-bold shadow-sm hover:bg-slate-50 transition-colors flex items-center gap-2 text-sm"
+                >
+                  <Calendar className="w-4 h-4 text-[#b45309]" />
+                  Show: {dateFilter}
+                </button>
+                {showFilterDropdown && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg z-50 overflow-hidden">
+                    <button onClick={() => handleFilterChange('All Time')} className="w-full text-left px-4 py-3 text-sm font-semibold hover:bg-slate-50 text-slate-700">All Time</button>
+                    <button onClick={() => handleFilterChange('Last 30 Days')} className="w-full text-left px-4 py-3 text-sm font-semibold hover:bg-slate-50 text-slate-700">Last 30 Days</button>
+                    <button onClick={() => handleFilterChange('Last 7 Days')} className="w-full text-left px-4 py-3 text-sm font-semibold hover:bg-slate-50 text-slate-700">Last 7 Days</button>
+                  </div>
+                )}
+              </div>
+              
               <button 
-                onClick={() => setShowFilterDropdown(!showFilterDropdown)}
-                className="bg-white border border-slate-200 text-slate-700 px-4 py-2.5 rounded-xl font-bold shadow-sm hover:bg-slate-50 transition-colors flex items-center gap-2 text-sm"
+                onClick={handleExportReport}
+                className="bg-[#b45309] hover:bg-amber-800 text-white px-5 py-2.5 rounded-xl font-bold shadow-md transition-colors flex items-center gap-2 text-sm shadow-amber-100"
               >
-                <Calendar className="w-4 h-4 text-[#f97316]" />
-                Show: {dateFilter}
+                <Download className="w-4 h-4" />
+                Export Report
               </button>
-              {showFilterDropdown && (
-                <div className="absolute right-36 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg z-50 overflow-hidden">
-                  <button onClick={() => handleFilterChange('All Time')} className="w-full text-left px-4 py-3 text-sm font-semibold hover:bg-slate-50 text-slate-700">All Time</button>
-                  <button onClick={() => handleFilterChange('Last 30 Days')} className="w-full text-left px-4 py-3 text-sm font-semibold hover:bg-slate-50 text-slate-700">Last 30 Days</button>
-                  <button onClick={() => handleFilterChange('Last 7 Days')} className="w-full text-left px-4 py-3 text-sm font-semibold hover:bg-slate-50 text-slate-700">Last 7 Days</button>
+            </div>
+          </div>
+          
+          {/* Card Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+            <div className="p-6 bg-slate-50 border border-slate-200/80 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex justify-between items-start mb-4">
+                <h3 className="font-bold text-slate-500 text-sm uppercase tracking-wider">Total Revenue</h3>
+                <div className="p-2 bg-green-50 rounded-lg">
+                   <BarChart3 className="text-green-600 w-5 h-5" />
                 </div>
-              )}
+              </div>
+              <p className="text-3xl font-black text-slate-900">${stats.revenue}</p>
+              <p className="text-xs text-slate-400 mt-2 font-semibold">Includes manager & client fees</p>
             </div>
             
-            <button 
-              onClick={handleExportReport}
-              className="bg-[#f97316] hover:bg-orange-600 text-white px-5 py-2.5 rounded-xl font-bold shadow-md transition-colors flex items-center gap-2 text-sm"
-            >
-              <Download className="w-4 h-4" />
-              Export Report
-            </button>
-          </div>
-        </div>
-        
-        <div className="grid md:grid-cols-4 gap-6 mb-10">
-          <div className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex justify-between items-start mb-4">
-              <h3 className="font-bold text-slate-500">Total Revenue</h3>
-              <div className="p-2 bg-green-50 rounded-lg">
-                 <BarChart3 className="text-green-600 w-5 h-5" />
-              </div>
-            </div>
-            <p className="text-3xl font-black text-slate-900">${stats.revenue}</p>
-            <p className="text-sm text-green-500 mt-2 font-medium">Includes manager & client fees</p>
-          </div>
-          <div className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex justify-between items-start mb-4">
-              <h3 className="font-bold text-slate-500">Registered Companies</h3>
-              <div className="p-2 bg-blue-50 rounded-lg">
-                 <Building2 className="text-blue-600 w-5 h-5" />
-              </div>
-            </div>
-            <p className="text-3xl font-black text-slate-900">{stats.companies}</p>
-            <p className="text-sm text-slate-400 mt-2 font-medium">Active client profiles</p>
-          </div>
-          <div className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex justify-between items-start mb-4">
-              <h3 className="font-bold text-slate-500">Active Managers</h3>
-              <div className="p-2 bg-purple-50 rounded-lg">
-                 <Users className="text-purple-600 w-5 h-5" />
-              </div>
-            </div>
-            <p className="text-3xl font-black text-slate-900">{stats.activeManagers}</p>
-            <p className="text-sm text-orange-500 mt-2 font-medium">{stats.pendingManagers} pending approval</p>
-          </div>
-          <div className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex justify-between items-start mb-4">
-              <h3 className="font-bold text-slate-500">Monthly Growth</h3>
-              <div className="p-2 bg-orange-50 rounded-lg">
-                 <TrendingUp className="text-[#f97316] w-5 h-5" />
-              </div>
-            </div>
-            <p className="text-3xl font-black text-slate-900">{stats.growth}</p>
-            <p className="text-sm text-slate-400 mt-2 font-medium">User acquisition speed</p>
-          </div>
-        </div>
-
-        <div className="bg-white border border-slate-200 rounded-3xl shadow-sm p-8">
-           <h3 className="font-extrabold text-slate-950 text-xl tracking-tight mb-6">Recent Applications</h3>
-           <div className="space-y-4">
-              {stats.pendingList.length > 0 ? (
-                stats.pendingList.map((mgr, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 bg-orange-50 rounded-xl border border-orange-100">
-                    <div>
-                      <p className="font-bold text-slate-900 text-sm">{mgr.company_name || `${mgr.firstName || 'New'} Manager`}</p>
-                      <p className="text-xs text-slate-500">{mgr.email}</p>
-                    </div>
-                    <button 
-                      onClick={() => handleApprove(mgr.id, mgr.email)}
-                      className="text-xs bg-[#f97316] hover:bg-orange-600 text-white px-3 py-1.5 rounded-lg font-bold transition-colors shadow-sm"
-                    >
-                      Approve
-                    </button>
-                  </div>
-                ))
-              ) : (
-                <div className="text-center py-12">
-                  <p className="text-sm text-slate-400 font-semibold">No pending applications.</p>
+            <div className="p-6 bg-slate-50 border border-slate-200/80 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex justify-between items-start mb-4">
+                <h3 className="font-bold text-slate-500 text-sm uppercase tracking-wider">Registered Companies</h3>
+                <div className="p-2 bg-blue-50 rounded-lg">
+                   <Building2 className="text-blue-600 w-5 h-5" />
                 </div>
-              )}
-           </div>
+              </div>
+              <p className="text-3xl font-black text-slate-900">{stats.companies}</p>
+              <p className="text-xs text-slate-400 mt-2 font-semibold">Active client profiles</p>
+            </div>
+            
+            <div className="p-6 bg-slate-50 border border-slate-200/80 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex justify-between items-start mb-4">
+                <h3 className="font-bold text-slate-500 text-sm uppercase tracking-wider">Active Managers</h3>
+                <div className="p-2 bg-purple-50 rounded-lg">
+                   <Users className="text-purple-600 w-5 h-5" />
+                </div>
+              </div>
+              <p className="text-3xl font-black text-slate-900">{stats.activeManagers}</p>
+              <p className="text-xs text-orange-500 mt-2 font-semibold">{stats.pendingManagers} pending approval</p>
+            </div>
+            
+            <div className="p-6 bg-slate-50 border border-slate-200/80 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex justify-between items-start mb-4">
+                <h3 className="font-bold text-slate-500 text-sm uppercase tracking-wider">Monthly Growth</h3>
+                <div className="p-2 bg-amber-50 rounded-lg">
+                   <TrendingUp className="text-[#b45309] w-5 h-5" />
+                </div>
+              </div>
+              <p className="text-3xl font-black text-slate-900">{stats.growth}</p>
+              <p className="text-xs text-slate-400 mt-2 font-semibold">User acquisition speed</p>
+            </div>
+          </div>
+  
+          {/* Main Visual Sections */}
+          <div className="grid lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 bg-slate-50 border border-slate-200/80 rounded-2xl shadow-sm p-8 min-h-[400px] flex flex-col justify-between">
+              <h3 className="font-bold text-slate-900 text-lg mb-6">Revenue Analytics History</h3>
+              <div className="flex-grow flex items-center justify-center border-2 border-dashed border-slate-200 rounded-xl p-10 bg-white">
+                <p className="text-slate-400 font-medium">Direct billing sync is online. Accumulating statistical trends.</p>
+              </div>
+            </div>
+            
+            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl shadow-sm p-6 flex flex-col">
+               <h3 className="font-bold text-slate-900 text-lg mb-6">Manager Verifications</h3>
+               <div className="flex-grow border-2 border-dashed border-slate-200 rounded-xl p-6 bg-white overflow-y-auto max-h-[300px]">
+                  <div className="space-y-4">
+                    {stats.pendingList.length > 0 ? (
+                      stats.pendingList.map((mgr, index) => (
+                        <div key={index} className="flex items-center justify-between p-4 bg-amber-50 rounded-xl border border-amber-100">
+                          <div>
+                            <p className="font-bold text-slate-900 text-sm">{mgr.company_name || `${mgr.firstName || 'New'} Manager`}</p>
+                            <p className="text-xs text-slate-500">{mgr.email}</p>
+                          </div>
+                          <button 
+                            onClick={() => handleApprove(mgr.id, mgr.email)}
+                            className="text-xs bg-[#b45309] hover:bg-amber-800 text-white px-3 py-1.5 rounded-lg font-bold transition-colors shadow-sm"
+                          >
+                            Approve
+                          </button>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-12">
+                        <p className="text-xs text-slate-400 font-medium">All manager profiles currently verified and activated.</p>
+                      </div>
+                    )}
+                  </div>
+               </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

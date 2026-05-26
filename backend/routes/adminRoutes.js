@@ -1,8 +1,9 @@
 import express from 'express';
 import { getSystemAnalytics } from '../controllers/adminAnalyticsController.js';
 import { getPendingManagers, approveManager, getAllManagers, updateManagerDetails, deleteUser } from '../controllers/adminManagerController.js';
-import { registerSoftware } from '../controllers/adminSoftwareController.js';
+import { registerSoftware, removeSoftware } from '../controllers/adminSoftwareController.js';
 import { getRegisteredCompanies } from '../controllers/adminCompanyController.js';
+import { saveSettings } from '../controllers/settingsController.js';
 import { protect, adminOnly } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -17,5 +18,7 @@ router.patch('/managers/:id/approve', approveManager);
 router.patch('/managers/:id', updateManagerDetails);
 router.delete('/managers/:id', deleteUser);
 router.post('/software', registerSoftware);
+router.delete('/software/:id', removeSoftware);
+router.post('/settings', saveSettings);
 
 export default router;

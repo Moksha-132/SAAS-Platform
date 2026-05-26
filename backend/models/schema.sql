@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS software (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(255) NOT NULL,
     description TEXT,
+    deployment_link VARCHAR(555),
     monthly_price DECIMAL(10, 2) NOT NULL,
     yearly_price DECIMAL(10, 2) NOT NULL,
     owner_id UUID REFERENCES users(id) ON DELETE CASCADE,

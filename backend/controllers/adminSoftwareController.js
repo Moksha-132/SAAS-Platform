@@ -1,4 +1,4 @@
-import { createSoftware } from '../models/softwareModel.js';
+import { createSoftware, deleteSoftwareRecord } from '../models/softwareModel.js';
 
 export const registerSoftware = async (req, res, next) => {
   try {
@@ -18,6 +18,16 @@ export const registerSoftware = async (req, res, next) => {
     });
 
     res.status(201).json({ success: true, software: sw });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const removeSoftware = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    await deleteSoftwareRecord(id);
+    res.status(200).json({ success: true, message: 'Software deleted successfully' });
   } catch (e) {
     next(e);
   }

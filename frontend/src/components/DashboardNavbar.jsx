@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Bell, User, LogOut } from 'lucide-react';
+import { User, LogOut } from 'lucide-react';
+import NotificationBell from './NotificationBell';
 
 const DashboardNavbar = ({ role }) => {
   return (
@@ -8,8 +9,9 @@ const DashboardNavbar = ({ role }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center cursor-pointer">
-            <Link to="/" className="text-2xl font-black text-slate-900 tracking-wider">
-              SYNCSAAS
+            <Link to="/" className="flex flex-col select-none">
+              <span className="text-2xl font-black text-slate-900 tracking-wider leading-none">SHNOOR</span>
+              <span className="text-[9px] font-black text-[#b45309] tracking-widest uppercase mt-0.5">International LLC</span>
             </Link>
           </div>
           
@@ -20,10 +22,7 @@ const DashboardNavbar = ({ role }) => {
           </div>
 
           <div className="flex items-center gap-6">
-            <button className="text-slate-500 hover:text-[#f97316] transition-colors relative">
-              <Bell className="w-6 h-6" />
-              <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-[#f97316] border-2 border-white rounded-full"></span>
-            </button>
+            <NotificationBell />
             
             <div className="flex items-center gap-3 border-l border-slate-200 pl-6">
               <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-600">

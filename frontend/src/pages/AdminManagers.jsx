@@ -338,7 +338,6 @@ const AdminManagers = () => {
                 <th className="px-6 py-4 font-bold">Manager Name</th>
                 <th className="px-6 py-4 font-bold">Email</th>
                 <th className="px-6 py-4 font-bold">Status</th>
-                <th className="px-6 py-4 font-bold">Paid Fee</th>
                 <th className="px-6 py-4 font-bold">Actions</th>
               </tr>
             </thead>
@@ -353,13 +352,6 @@ const AdminManagers = () => {
                         <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">Approved</span>
                       ) : (
                         <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-xs font-bold">Pending</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
-                      {mgr.payment_completed ? (
-                        <span className="text-green-600 font-semibold text-sm">Paid ($99)</span>
-                      ) : (
-                        <span className="text-slate-400 font-semibold text-sm">Unpaid</span>
                       )}
                     </td>
                     <td className="px-6 py-4 flex gap-2">
@@ -397,7 +389,7 @@ const AdminManagers = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="5" className="px-6 py-12 text-center text-slate-500">No managers available.</td>
+                  <td colSpan="4" className="px-6 py-12 text-center text-slate-500">No managers available.</td>
                 </tr>
               )}
             </tbody>
@@ -520,18 +512,6 @@ const AdminManagers = () => {
                   >
                     <option value="true">Approved</option>
                     <option value="false">Pending</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-bold text-slate-900 mb-2">Onboarding Fee Status</label>
-                  <select
-                    value={editPaymentCompleted ? 'true' : 'false'}
-                    onChange={(e) => setEditPaymentCompleted(e.target.value === 'true')}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#0F172A] bg-white font-medium"
-                  >
-                    <option value="true">Paid ($99)</option>
-                    <option value="false">Unpaid</option>
                   </select>
                 </div>
 

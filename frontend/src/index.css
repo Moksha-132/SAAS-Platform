@@ -1,17 +1,17 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #0F172A;
-  --color-secondary: #f97316;
-  --color-dark: #0F172A;
-  --color-light: #FFFFFF;
+  --color-primary: var(--theme-nav-bg, #0F172A);
+  --color-secondary: var(--theme-accent, #f97316);
+  --color-dark: var(--theme-nav-bg, #0F172A);
+  --color-light: var(--theme-bg, #FFFFFF);
   --color-slateText: #475569;
 }
 
 @layer base {
   body {
-    background-color: var(--color-white);
-    color: var(--color-slate-900);
+    background-color: var(--theme-bg, #f8fafc);
+    color: var(--theme-text, #0f172a);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
@@ -38,4 +38,37 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+
+.min-h-screen.bg-slate-50, .min-h-screen.bg-slate-100 {
+  background-color: var(--theme-bg, #f8fafc) !important;
+}
+
+.bg-\[\#b45309\] {
+  background-color: var(--theme-accent, #b45309) !important;
+}
+
+.text-\[\#b45309\] {
+  color: var(--theme-accent, #b45309) !important;
+}
+
+.bg-\[\#f97316\] {
+  background-color: var(--theme-accent, #f97316) !important;
+}
+
+.hover\:bg-orange-600:hover {
+  background-color: var(--theme-accent, #f97316) !important;
+  filter: brightness(0.9);
+}
+
+.bg-orange-500 {
+  background-color: var(--theme-accent, #f97316) !important;
+}
+
+.text-orange-500 {
+  color: var(--theme-accent, #f97316) !important;
+}
+
+.text-slate-900, .text-slate-800, .text-slate-700 {
+  color: var(--theme-text, #0f172a) !important;
 }
