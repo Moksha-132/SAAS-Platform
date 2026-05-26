@@ -7,7 +7,7 @@ import { useLocation } from 'react-router-dom';
 import { 
   Send, Paperclip, Smile, Phone, Video, Search, User, 
   ChevronRight, Download, File, X, PhoneCall, PhoneOff, 
-  Mic, MicOff, Volume2, VolumeX, Calendar, Clock, ArrowRight,
+  Mic, MicOff, Volume2, VolumeX, Calendar, Clock, ArrowRight, ArrowLeft,
   ExternalLink, VideoOff, Monitor, MessageSquare, Hand, MoreVertical
 } from 'lucide-react';
 
@@ -678,7 +678,7 @@ const ManagerChat = () => {
         </div>
 
         <div className="flex-grow bg-white border border-slate-200 rounded-3xl shadow-xl shadow-slate-100/40 flex overflow-hidden min-h-0">
-          <div className="w-1/3 border-r border-slate-100 flex flex-col">
+          <div className={`w-full md:w-1/3 border-r border-slate-100 flex flex-col ${selectedPartner ? 'hidden md:flex' : 'flex'}`}>
             {notificationStatus === 'default' && (
               <div className="p-3 bg-amber-50 border-b border-slate-200 text-xs text-[#b45309] font-bold flex justify-between items-center">
                 <span>Desktop notifications are disabled.</span>
@@ -755,11 +755,19 @@ const ManagerChat = () => {
             </div>
           </div>
 
-          <div className="w-2/3 flex flex-col bg-slate-50/40 relative">
+          <div className={`w-full md:w-2/3 flex flex-col bg-slate-50/40 relative ${selectedPartner ? 'flex' : 'hidden md:flex'}`}>
             {selectedPartner ? (
               <>
                 <div className="bg-white px-6 py-4 border-b border-slate-100 flex items-center justify-between shadow-sm z-10 flex-shrink-0">
                   <div className="flex items-center gap-3">
+                    {/* Back Button for mobile view */}
+                    <button 
+                      onClick={() => setSelectedPartner(null)}
+                      className="md:hidden p-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600 rounded-xl transition-all cursor-pointer mr-1 flex items-center justify-center active:scale-95"
+                      aria-label="Back to contacts list"
+                    >
+                      <ArrowLeft className="w-4.5 h-4.5" />
+                    </button>
                     <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center text-[#b45309] font-bold">
                       <User className="w-5 h-5" />
                     </div>
