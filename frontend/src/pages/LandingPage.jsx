@@ -166,15 +166,15 @@ const LandingPage = () => {
 
           {softwareList.length === 0 ? (
             <div className="text-center py-16 bg-slate-50/50 border border-slate-200/40 rounded-3xl">
-              <h3 className="text-lg font-bold text-slate-600 mb-1">No software found</h3>
-              <p className="text-sm text-slate-400">There are currently no products hosted in the marketplace matching your search.</p>
+              <h3 className="text-lg font-bold text-slate-700 mb-1">No software found</h3>
+              <p className="text-sm text-slate-600">There are currently no products hosted in the marketplace matching your search.</p>
             </div>
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {softwareList.map(software => (
                 <div key={software.id} className="border border-slate-200/60 rounded-2xl p-6 bg-white hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-left flex flex-col h-full shadow-sm">
                   <div className="w-full h-40 bg-slate-50 rounded-xl mb-6 flex items-center justify-center border border-slate-100">
-                    <span className="text-slate-400 font-bold text-xl">{software.name}</span>
+                    <span className="text-slate-600 font-bold text-xl">{software.name}</span>
                   </div>
                   <h3 className="text-xl font-bold text-slate-900 mb-2">{software.name}</h3>
                   <p className="text-sm text-slate-500 mb-6 flex-grow line-clamp-3">{software.description}</p>
@@ -238,7 +238,7 @@ const LandingPage = () => {
                     <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-white" style={{ backgroundColor: accentColor }}>
                       <Icon className="w-7 h-7" />
                     </div>
-                    <span className="text-5xl font-black opacity-10" style={{ color: textColor }}>{step.num}</span>
+                    <span className="text-5xl font-black opacity-10" style={{ color: textColor }} aria-hidden="true">{step.num}</span>
                   </div>
                   <h3 className="text-2xl font-bold mb-3" style={{ color: textColor }}>{step.title}</h3>
                   <p className="leading-relaxed opacity-70 text-sm" style={{ color: textColor }}>{step.desc}</p>

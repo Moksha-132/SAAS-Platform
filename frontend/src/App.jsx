@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import GlobalNotificationListener from './components/GlobalNotificationListener';
 
 // Performance Optimization: Dynamic lazy-loading for code splitting
-const LandingPage = lazy(() => import('./pages/LandingPage'));
+import LandingPage from './pages/LandingPage';
 const FeaturesPage = lazy(() => import('./pages/FeaturesPage'));
 const MarketplacePage = lazy(() => import('./pages/MarketplacePage'));
 const HowItWorksPage = lazy(() => import('./pages/HowItWorksPage'));
