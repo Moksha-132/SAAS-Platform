@@ -12,7 +12,7 @@
   body {
     background-color: var(--theme-bg, #f8fafc);
     color: var(--theme-text, #0f172a);
-    font-family: var(--font-sans);
+    font-family: 'Plus Jakarta Sans', var(--font-sans), sans-serif;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
   }

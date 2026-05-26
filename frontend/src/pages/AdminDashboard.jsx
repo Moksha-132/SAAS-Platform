@@ -185,7 +185,7 @@ const AdminDashboard = () => {
     <div className="min-h-screen bg-slate-50 flex">
       <AdminSidebar />
       
-      <div className="flex-grow ml-64 p-8 lg:p-12 bg-slate-50 min-h-screen">
+      <div className="flex-grow md:ml-64 ml-0 p-4 md:p-8 lg:p-12 pt-20 md:pt-8 bg-slate-50 min-h-screen">
         {/* Main Content Wrapper Card */}
         <div className="bg-white rounded-3xl border border-slate-200 shadow-xl shadow-slate-100 p-8 lg:p-10 max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center pb-8 border-b border-slate-100 mb-10 gap-4">
@@ -314,3 +314,4 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+

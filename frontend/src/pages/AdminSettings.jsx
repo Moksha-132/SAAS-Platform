@@ -202,7 +202,7 @@ const AdminSettings = () => {
   return (
     <div className="min-h-screen bg-slate-50 flex">
       <AdminSidebar />
-      <div className="flex-grow ml-64 p-8 lg:p-12">
+      <div className="flex-grow md:ml-64 ml-0 p-4 md:p-8 lg:p-12 pt-20 md:pt-8">
         
         <div className="flex justify-between items-center mb-8 border-b border-slate-200 pb-5">
           <div>
@@ -362,3 +362,4 @@ const AdminSettings = () => {
 };
 
 export default AdminSettings;
+

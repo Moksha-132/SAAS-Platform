@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LayoutDashboard, MessageSquare, ShoppingCart, Package, Settings, LogOut, Users } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, ShoppingCart, Package, Settings, LogOut, Users, Menu, X } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useWebsiteSettings } from '../hooks/useWebsiteSettings';
 
@@ -51,11 +51,37 @@ const UserSidebar = () => {
     navigate('/login');
   };
 
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <div 
-      className="w-64 min-h-screen fixed left-0 top-0 flex flex-col shadow-2xl z-50"
-      style={{ backgroundColor: navBgColor, color: navTextColor }}
-    >
+    <>
+      {/* Mobile Toggle Button */}
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="fixed top-4 left-4 z-50 md:hidden p-2.5 rounded-xl shadow-lg border transition-all active:scale-95 flex items-center justify-center cursor-pointer"
+        aria-label="Toggle navigation menu"
+        style={{
+          backgroundColor: navBgColor,
+          color: navTextColor,
+          borderColor: isDarkColor(navBgColor) ? 'rgba(255, 255, 255, 0.15)' : 'rgba(15, 23, 42, 0.15)'
+        }}
+      >
+        {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+      </button>
+
+      {/* Mobile Sidebar Backdrop Overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 md:hidden" 
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      {/* Sidebar main panel */}
+      <div 
+        className={`w-64 min-h-screen fixed left-0 top-0 flex flex-col shadow-2xl z-45 transition-transform duration-300 md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        style={{ backgroundColor: navBgColor, color: navTextColor }}
+      >
       <div className="p-6 mb-4">
         <Link to="/" className="flex flex-col select-none">
           <span className="text-2xl font-black tracking-wider leading-none" style={{ color: navTextColor }}>
@@ -114,7 +140,8 @@ const UserSidebar = () => {
         </button>
       </div>
     </div>
-  );
+  </>
+);
 };
 
 export default UserSidebar;

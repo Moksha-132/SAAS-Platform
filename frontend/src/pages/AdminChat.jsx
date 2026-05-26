@@ -666,7 +666,7 @@ const AdminChat = () => {
     <div className="min-h-screen bg-slate-50 flex">
       <AdminSidebar />
       
-      <div className="flex-grow ml-64 p-8 lg:p-12 bg-slate-50 h-screen flex flex-col">
+      <div className="flex-grow md:ml-64 ml-0 p-4 md:p-8 lg:p-12 pt-20 md:pt-8 bg-slate-50 h-screen flex flex-col">
         <div className="mb-6 flex-shrink-0 flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-black text-slate-900 tracking-tight">Support Chat</h1>
@@ -1227,3 +1227,4 @@ const AdminChat = () => {
 };
 
 export default AdminChat;
+

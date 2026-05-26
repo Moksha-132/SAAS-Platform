@@ -56,7 +56,7 @@ const UserSettings = () => {
     <div className="min-h-screen bg-slate-50 flex">
       <UserSidebar />
       
-      <div className="flex-grow ml-64 p-8 lg:p-12 min-h-screen">
+      <div className="flex-grow md:ml-64 ml-0 p-4 md:p-8 lg:p-12 pt-20 md:pt-8 min-h-screen">
         <div className="max-w-4xl mx-auto">
           
           <div className="flex items-center gap-4 mb-8">
@@ -166,3 +166,4 @@ const UserSettings = () => {
 };
 
 export default UserSettings;
+
