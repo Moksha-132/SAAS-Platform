@@ -16,8 +16,8 @@ const LandingPage = () => {
   
   const bgColor = settings?.bgColor || '#FFFFFF';
   const textColor = settings?.textColor || '#0F172A';
-  // #b45309 (amber-700) has 5.1:1 contrast on white — passes WCAG AA
-  const accentColor = settings?.accentColor || '#b45309';
+  // #9a3412 (orange-800) has > 4.5:1 contrast on white — passes WCAG AA
+  const accentColor = settings?.accentColor || '#9a3412';
 
   const contactTitle = settings?.contactTitle || 'Get in Touch';
   const contactSubtitle = settings?.contactSubtitle || "Have questions about our platform? We're here to help.";
@@ -159,6 +159,7 @@ const LandingPage = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search for software tools..." 
+              aria-label="Search for software tools"
               className="w-full pl-12 pr-4 py-3 bg-slate-50 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#b45309] text-sm text-slate-800"
             />
           </div>
@@ -199,6 +200,7 @@ const LandingPage = () => {
                         target="_blank" rel="noreferrer"
                         className="bg-white border-2 border-slate-200 hover:border-[#b45309] hover:text-[#b45309] text-slate-500 p-3 rounded-xl transition-colors"
                         title="View Deployment"
+                        aria-label={`View deployment for ${software.name}`}
                       >
                         <ExternalLink className="w-4 h-4" />
                       </a>
