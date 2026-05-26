@@ -192,8 +192,23 @@ const AdminSettings = () => {
     alert('All settings saved and applied successfully across pages!');
   };
 
-  const handleReset = () => {
+  const handleReset = async () => {
     if (window.confirm('Reset all layout and page settings back to defaults?')) {
+      const token = localStorage.getItem('token') || localStorage.getItem('syncsaas_token');
+      if (token) {
+        try {
+          await fetch('http://localhost:5000/api/admin/settings', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ settings: {} })
+          });
+        } catch (err) {
+          console.warn(err.message);
+        }
+      }
       localStorage.removeItem('syncsaas_website_settings');
       window.location.reload();
     }
