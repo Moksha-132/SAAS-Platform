@@ -13,6 +13,7 @@ import adminRoutes from './routes/adminRoutes.js';
 import managerRoutes from './routes/managerRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
+import contactRoutes from './routes/contactRoutes.js';
 
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -125,6 +126,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/managers', managerRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/chats', chatRoutes);
+app.use('/api/contact', contactRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

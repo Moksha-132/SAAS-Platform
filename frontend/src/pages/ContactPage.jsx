@@ -1,11 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { Mail, Phone, MapPin } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, Loader2 } from 'lucide-react';
 import { useWebsiteSettings } from '../hooks/useWebsiteSettings';
 
 const ContactPage = () => {
   const settings = useWebsiteSettings();
+
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [statusMessage, setStatusMessage] = useState(null);
+  const [statusType, setStatusType] = useState('success'); // 'success' | 'error'
 
   const contactTitle = settings?.contactTitle || 'Get in Touch';
   const contactSubtitle = settings?.contactSubtitle || "Have questions about our platform? We're here to help.";
@@ -21,6 +29,42 @@ const ContactPage = () => {
   const titleWords = contactTitle.split(' ');
   const lastWord = titleWords.pop();
   const titleMain = titleWords.join(' ');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!email || !message) {
+      setStatusType('error');
+      setStatusMessage('Please enter your email and message.');
+      return;
+    }
+    setLoading(true);
+    setStatusMessage(null);
+
+    try {
+      const response = await fetch('http://localhost:5000/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, subject, message })
+      });
+      const data = await response.json();
+      if (data.success) {
+        setStatusType('success');
+        setStatusMessage(data.message);
+        setName('');
+        setEmail('');
+        setSubject('');
+        setMessage('');
+      } else {
+        setStatusType('error');
+        setStatusMessage(data.message || 'Something went wrong. Please try again.');
+      }
+    } catch (err) {
+      setStatusType('error');
+      setStatusMessage('Unable to reach the server. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: bgColor, color: textColor }}>
@@ -87,11 +131,25 @@ const ContactPage = () => {
             className="p-8 rounded-3xl border"
             style={{ backgroundColor: `${textColor}05`, borderColor: `${textColor}15` }}
           >
-            <form className="space-y-6">
+            {statusMessage && (
+              <div 
+                className={`mb-6 p-4 rounded-xl text-sm font-bold border transition-all ${
+                  statusType === 'success' 
+                    ? 'bg-emerald-50 border-emerald-200 text-emerald-800' 
+                    : 'bg-rose-50 border-rose-200 text-rose-800'
+                }`}
+              >
+                {statusMessage}
+              </div>
+            )}
+            
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label className="block text-sm font-bold mb-2" style={{ color: textColor }}>Full Name</label>
                 <input 
                   type="text" 
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 bg-white" 
                   style={{ borderColor: `${textColor}20`, focusRingColor: accentColor }}
                   placeholder="John Doe" 
@@ -101,26 +159,54 @@ const ContactPage = () => {
                 <label className="block text-sm font-bold mb-2" style={{ color: textColor }}>Email Address</label>
                 <input 
                   type="email" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
                   className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 bg-white" 
                   style={{ borderColor: `${textColor}20`, focusRingColor: accentColor }}
                   placeholder="john@example.com" 
                 />
               </div>
               <div>
+                <label className="block text-sm font-bold mb-2" style={{ color: textColor }}>Subject (Optional)</label>
+                <input 
+                  type="text" 
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 bg-white" 
+                  style={{ borderColor: `${textColor}20`, focusRingColor: accentColor }}
+                  placeholder="e.g. Partnership Request" 
+                />
+              </div>
+              <div>
                 <label className="block text-sm font-bold mb-2" style={{ color: textColor }}>Message</label>
                 <textarea 
                   rows="4" 
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  required
                   className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 bg-white resize-none" 
                   style={{ borderColor: `${textColor}20`, focusRingColor: accentColor }}
                   placeholder="How can we help you?"
                 />
               </div>
               <button 
-                type="button" 
-                className="w-full text-white px-6 py-4 rounded-xl font-bold text-lg transition-all shadow-md hover:opacity-90"
+                type="submit" 
+                disabled={loading}
+                className="w-full text-white px-6 py-4 rounded-xl font-bold text-lg transition-all shadow-md hover:opacity-90 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ backgroundColor: accentColor }}
               >
-                Send Message
+                {loading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Sending Request...
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-5 h-5" />
+                    Send Message
+                  </>
+                )}
               </button>
             </form>
           </div>

@@ -128,18 +128,6 @@ const LoginPage = () => {
     }
   };
 
-  const fillCredentials = (role) => {
-    if (role === 'admin') {
-      setEmail('admin@syncsaas.com');
-      setPassword('admin123');
-    } else if (role === 'manager') {
-      setEmail('manager@syncsaas.com');
-      setPassword('manager123');
-    } else if (role === 'user') {
-      setEmail('user@company.com');
-      setPassword('user123');
-    }
-  };
 
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: bgColor, color: textColor }}>
@@ -230,38 +218,6 @@ const LoginPage = () => {
             </div>
           </div>
 
-          <div 
-            className="border rounded-2xl p-6 text-center mt-6"
-            style={{ backgroundColor: `${textColor}05`, borderColor: `${textColor}15` }}
-          >
-            <h3 className="text-sm font-bold mb-4 uppercase tracking-wider" style={{ color: textColor }}>Demo Credentials</h3>
-            <div className="flex flex-col gap-3">
-              <button 
-                type="button"
-                onClick={() => fillCredentials('admin')}
-                className="text-sm bg-white border px-4 py-2 rounded-lg transition-colors hover:opacity-90"
-                style={{ borderColor: `${textColor}15`, color: textColor }}
-              >
-                <strong>Admin:</strong> admin@syncsaas.com / admin123
-              </button>
-              <button 
-                type="button"
-                onClick={() => fillCredentials('manager')}
-                className="text-sm bg-white border px-4 py-2 rounded-lg transition-colors hover:opacity-90"
-                style={{ borderColor: `${textColor}15`, color: textColor }}
-              >
-                <strong>Manager:</strong> manager@syncsaas.com / manager123
-              </button>
-              <button 
-                type="button"
-                onClick={() => fillCredentials('user')}
-                className="text-sm bg-white border px-4 py-2 rounded-lg transition-colors hover:opacity-90"
-                style={{ borderColor: `${textColor}15`, color: textColor }}
-              >
-                <strong>User:</strong> user@company.com / user123
-              </button>
-            </div>
-          </div>
 
         </div>
       </div>
