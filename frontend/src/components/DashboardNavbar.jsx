@@ -10,8 +10,7 @@ const DashboardNavbar = ({ role }) => {
         <div className="flex items-center justify-between">
           <div className="flex items-center cursor-pointer">
             <Link to="/" className="flex flex-col select-none">
-              <span className="text-2xl font-black text-slate-900 tracking-wider leading-none">SHNOOR</span>
-              <span className="text-[9px] font-black text-[#b45309] tracking-widest uppercase mt-0.5">International LLC</span>
+              <span className="text-2xl font-black text-slate-900 tracking-wider leading-none">SYNCSAAS</span>
             </Link>
           </div>
           

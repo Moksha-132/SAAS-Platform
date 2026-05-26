@@ -5,7 +5,7 @@ import { useWebsiteSettings } from '../hooks/useWebsiteSettings';
 
 const Footer = () => {
   const settings = useWebsiteSettings();
-  const footerCopyright = settings?.footerText || '© 2026 SHNOOR International LLC. All rights reserved.';
+  const footerCopyright = settings?.footerText || '© 2026 SyncSaaS. All rights reserved.';
   const footerDesc = settings?.footerDescription || 'Transform your software acquisition experience with a SaaS directory connecting providers, clients, and dedicated project managers in one premium platform.';
   const accentColor = settings?.accentColor || '#b45309';
 
@@ -16,8 +16,7 @@ const Footer = () => {
           {/* Column 1 */}
           <div className="md:col-span-2 pr-8">
             <div className="flex flex-col select-none mb-6">
-              <span className="text-xl font-black tracking-wider text-white leading-none">SHNOOR</span>
-              <span className="text-[9px] font-black text-[#b45309] tracking-widest uppercase mt-0.5">International LLC</span>
+              <span className="text-xl font-black tracking-wider text-white leading-none">SYNCSAAS</span>
             </div>
             <p className="text-slate-400 text-sm leading-relaxed mb-8 max-w-sm">
               {footerDesc}

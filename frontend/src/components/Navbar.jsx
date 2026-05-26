@@ -8,7 +8,7 @@ const Navbar = () => {
   const location = useLocation();
   const settings = useWebsiteSettings();
 
-  const brand = settings?.brandName || 'SHNOOR';
+  const brand = settings?.brandName || 'SYNCSAAS';
   const navBg = settings?.navBgColor || '#FFFFFF';
   const navText = settings?.navTextColor || '#64748B';
 
@@ -102,7 +102,7 @@ const Navbar = () => {
               <a href="#how-it-works" onClick={(e) => { handleNavClick(e, 'how-it-works'); setIsMobileMenuOpen(false); }} className="font-semibold transition-colors px-2 py-1 hover:bg-slate-50 rounded-lg" style={{ color: navText }}>How It Works</a>
               <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)} className="font-semibold transition-colors px-2 py-1 hover:bg-slate-50 rounded-lg" style={{ color: navText }}>Contact</Link>
               <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="font-semibold transition-colors px-2 py-1 hover:bg-slate-50 rounded-lg" style={{ color: navText }}>Log In</Link>
-              <Link to="/register" onClick={() => setIsMobileMenuOpen(false)} className="bg-[#b45309] hover:bg-amber-800 text-white px-4 py-2.5 rounded-lg font-semibold text-center transition-all shadow-md shadow-amber-100 block">
+              <Link to="/register" onClick={() => setIsMobileMenuOpen(false)} className="bg-[#9a3412] hover:bg-[#7c2d12] text-white px-4 py-2.5 rounded-lg font-semibold text-center transition-all shadow-md block">
                 Register
               </Link>
             </div>

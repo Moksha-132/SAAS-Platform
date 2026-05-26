@@ -100,8 +100,8 @@ const AIAssistantWidget = ({ role }) => {
 
   useEffect(() => {
     const welcomeText = role === 'admin' 
-      ? "Hello Admin! I am your SHNOOR Assistant. I can help you search companies, check manager approvals, view sales analytics, or navigate the dashboard. Try asking me a question or click a suggestion below!"
-      : "Hello Manager! I am your SHNOOR Assistant. I can help you host new software, view sales, chat with clients, or update your settings. Try asking me a question or click a suggestion below!";
+      ? "Hello Admin! I am your SYNCSAAS Assistant. I can help you search companies, check manager approvals, view sales analytics, or navigate the dashboard. Try asking me a question or click a suggestion below!"
+      : "Hello Manager! I am your SYNCSAAS Assistant. I can help you host new software, view sales, chat with clients, or update your settings. Try asking me a question or click a suggestion below!";
 
     setMessages([
       { id: 1, sender: 'bot', text: welcomeText, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }

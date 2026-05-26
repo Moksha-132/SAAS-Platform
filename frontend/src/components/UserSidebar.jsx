@@ -20,7 +20,7 @@ const UserSidebar = () => {
   };
 
   const settings = useWebsiteSettings();
-  const brandName = settings?.brandName || 'SHNOOR';
+  const brandName = settings?.brandName || 'SYNCSAAS';
   const navBgColor = settings?.navBgColor || '#0F172A';
   const defaultTextColor = isDarkColor(navBgColor) ? '#ffffff' : '#0F172A';
   const navTextColor = settings?.navTextColor || defaultTextColor;
