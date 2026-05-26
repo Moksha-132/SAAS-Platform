@@ -445,7 +445,7 @@ const AIAssistantWidget = ({ role }) => {
               className="bg-[#b45309] hover:bg-amber-800 text-white p-4 rounded-full shadow-2xl flex items-center justify-center cursor-pointer group relative border border-amber-600"
             >
               <Bot className="w-7 h-7" />
-              <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
+              <span className="absolute top-0 right-0 flex h-3.5 w-3.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500"></span>
               </span>

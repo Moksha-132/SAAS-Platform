@@ -131,9 +131,9 @@ const AdminSidebar = () => {
         </Link>
       </div>
 
+      </div>
       <AIAssistantWidget role="admin" />
-    </div>
-  </>
+    </>
 );
 };
 

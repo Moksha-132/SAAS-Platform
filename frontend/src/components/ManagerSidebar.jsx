@@ -141,9 +141,9 @@ const ManagerSidebar = () => {
         </button>
       </div>
 
+      </div>
       <AIAssistantWidget role="manager" />
-    </div>
-  </>
+    </>
 );
 };
 
