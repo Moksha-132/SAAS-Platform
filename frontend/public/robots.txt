@@ -1,0 +1,33 @@
+User-agent: *
+Allow: /
+Allow: /features
+Allow: /marketplace
+Allow: /how-it-works
+Allow: /contact
+Allow: /login
+Allow: /register
+Allow: /forgot-password
+Allow: /privacy-policy
+Allow: /terms-conditions
+
+Disallow: /admin-dashboard
+Disallow: /admin-companies
+Disallow: /admin-managers
+Disallow: /admin-analytics
+Disallow: /admin-chat
+Disallow: /admin-settings
+Disallow: /manager-dashboard
+Disallow: /manager-software
+Disallow: /manager-chat
+Disallow: /manager-sales
+Disallow: /manager-pending
+Disallow: /manager-settings
+Disallow: /user-dashboard
+Disallow: /user-marketplace
+Disallow: /user-cart
+Disallow: /user-contact
+Disallow: /user-chat
+Disallow: /user-settings
+Disallow: /reset-password
+
+Sitemap: https://shnoor-saas-platform.vercel.app/sitemap.xml
