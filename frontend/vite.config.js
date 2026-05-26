@@ -10,9 +10,10 @@ export default defineConfig(({ mode }) => {
   const replaceApiUrlPlugin = () => {
     return {
       name: 'replace-api-url',
+      enforce: 'pre',
       transform(code, id) {
-        // Automatically target source files during build phase
-        if (id.includes('/src/') && (id.endsWith('.js') || id.endsWith('.jsx'))) {
+        // Find and replace localhost in any source file automatically before transpilation
+        if (code.includes('http://localhost:5000')) {
           const targetUrl = env.VITE_API_URL || 'https://saas-platform-backend-em4s.onrender.com';
           return {
             code: code.replaceAll('http://localhost:5000', targetUrl),
@@ -24,7 +25,7 @@ export default defineConfig(({ mode }) => {
   };
 
   return {
-    plugins: [react(), tailwindcss(), replaceApiUrlPlugin()],
+    plugins: [replaceApiUrlPlugin(), react(), tailwindcss()],
     build: {
       minify: false, 
       cssMinify: false, 
