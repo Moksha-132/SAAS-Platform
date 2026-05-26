@@ -27,9 +27,18 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [replaceApiUrlPlugin(), react(), tailwindcss()],
     build: {
-      minify: false, 
-      cssMinify: false, 
-      sourcemap: false
+      minify: 'esbuild',
+      cssMinify: true,
+      sourcemap: false,
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              return 'vendor';
+            }
+          }
+        }
+      }
     }
   };
 })
