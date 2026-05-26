@@ -56,7 +56,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <div className="flex items-center justify-between">
-            <Link to="/" onClick={handleHomeClick} className="flex flex-col select-none">
+            <Link to="/" onClick={handleHomeClick} aria-label="SyncSaaS homepage" className="flex flex-col select-none">
               <span className="text-2xl font-black tracking-wider leading-none" style={{ color: navText === '#64748B' ? '#0F172A' : navText }}>
                 {brand}
               </span>

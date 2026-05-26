@@ -30,12 +30,32 @@ export default defineConfig(({ mode }) => {
       minify: 'esbuild',
       cssMinify: true,
       sourcemap: false,
+      target: 'es2015',
       rollupOptions: {
         output: {
+          // Granular chunk splitting to minimize unused JS on initial load
           manualChunks(id) {
-            if (id.includes('node_modules')) {
-              return 'vendor';
-            }
+            // Heavy chat-only libraries – only loaded when chat pages are visited
+            if (id.includes('emoji-picker-react')) return 'emoji-picker';
+            if (
+              id.includes('socket.io-client') ||
+              id.includes('engine.io-client') ||
+              id.includes('socket.io-parser')
+            ) return 'socket-io';
+            // Animation library used on LandingPage
+            if (id.includes('framer-motion')) return 'framer-motion';
+            // Icon library – used everywhere, keep in vendor
+            if (id.includes('lucide-react')) return 'lucide';
+            // Core React runtime
+            if (
+              id.includes('/react/') ||
+              id.includes('/react-dom/') ||
+              id.includes('/scheduler/')
+            ) return 'react-core';
+            // Router
+            if (id.includes('react-router')) return 'router';
+            // Everything else from node_modules
+            if (id.includes('node_modules')) return 'vendor';
           }
         }
       }

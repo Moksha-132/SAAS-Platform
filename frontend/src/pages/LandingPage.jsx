@@ -16,7 +16,8 @@ const LandingPage = () => {
   
   const bgColor = settings?.bgColor || '#FFFFFF';
   const textColor = settings?.textColor || '#0F172A';
-  const accentColor = settings?.accentColor || '#f97316';
+  // #b45309 (amber-700) has 5.1:1 contrast on white — passes WCAG AA
+  const accentColor = settings?.accentColor || '#b45309';
 
   const contactTitle = settings?.contactTitle || 'Get in Touch';
   const contactSubtitle = settings?.contactSubtitle || "Have questions about our platform? We're here to help.";
@@ -90,8 +91,11 @@ const LandingPage = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: bgColor, color: textColor }}>
+      {/* Skip to main content for keyboard/screen reader users */}
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-white focus:text-slate-900 focus:rounded-lg focus:font-bold focus:shadow-lg">Skip to main content</a>
       <Navbar />
       
+      <main id="main-content">
       <div className="pt-32 pb-20 lg:pt-44 lg:pb-32 text-center" style={{ backgroundColor: bgColor }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -260,6 +264,7 @@ const LandingPage = () => {
           </p>
         </div>
       </div>
+      </main>
 
       <Footer />
     </div>

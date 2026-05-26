@@ -6,7 +6,7 @@ import { useWebsiteSettings } from '../hooks/useWebsiteSettings';
 
 const FeatureDetailCard = ({ icon: Icon, title, desc }) => (
   <div className="p-8 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition-shadow text-left flex flex-col">
-    <div className="w-12 h-12 bg-slate-50 rounded-lg flex items-center justify-center mb-6 text-[#f97316]">
+    <div className="w-12 h-12 bg-slate-50 rounded-lg flex items-center justify-center mb-6 text-[#b45309]">
       <Icon className="w-6 h-6" />
     </div>
     <h3 className="text-xl font-bold mb-3 text-slate-900">{title}</h3>
@@ -31,10 +31,11 @@ const FeaturesPage = () => {
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-white focus:text-slate-900 focus:rounded-lg focus:font-bold">Skip to main content</a>
       <Navbar />
-      <div className="flex-grow pt-24 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full text-center">
+      <main id="main-content" className="flex-grow pt-24 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full text-center">
         <h1 className="text-5xl font-extrabold text-slate-900 mb-6">
-          Everything you need to <span className="text-[#f97316]">scale.</span>
+          Everything you need to <span className="text-[#b45309]">scale.</span>
         </h1>
         <p className="text-slate-500 text-lg max-w-2xl mx-auto mb-16">
           Whether you're selling software, managing clients, or looking for the next best tool for your business, SyncSaaS provides a comprehensive suite of features.
@@ -53,7 +54,7 @@ const FeaturesPage = () => {
             );
           })}
         </div>
-      </div>
+      </main>
       <Footer />
     </div>
   );

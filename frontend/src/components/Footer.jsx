@@ -7,7 +7,7 @@ const Footer = () => {
   const settings = useWebsiteSettings();
   const footerCopyright = settings?.footerText || '© 2026 SHNOOR International LLC. All rights reserved.';
   const footerDesc = settings?.footerDescription || 'Transform your software acquisition experience with a SaaS directory connecting providers, clients, and dedicated project managers in one premium platform.';
-  const accentColor = settings?.accentColor || '#f97316';
+  const accentColor = settings?.accentColor || '#b45309';
 
   return (
     <footer className="bg-[#0F172A] text-white pt-20 pb-8">

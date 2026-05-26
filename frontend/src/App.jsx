@@ -35,6 +35,8 @@ const TermsConditionsPage = lazy(() => import('./pages/TermsConditionsPage'));
 
 function App() {
   useEffect(() => {
+    const controller = new AbortController();
+
     const applyTheme = () => {
       const stored = localStorage.getItem('syncsaas_website_settings');
       if (stored) {
@@ -50,7 +52,9 @@ function App() {
 
     const fetchSettings = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/auth/settings');
+        const response = await fetch('http://localhost:5000/api/auth/settings', {
+          signal: controller.signal
+        });
         const data = await response.json();
         if (response.ok && data.success && data.settings) {
           localStorage.setItem('syncsaas_website_settings', JSON.stringify(data.settings));
@@ -59,14 +63,19 @@ function App() {
           window.dispatchEvent(new Event('syncsaas_settings_updated'));
         }
       } catch (err) {
-        console.warn(err.message);
+        if (err.name !== 'AbortError') {
+          console.warn(err.message);
+        }
       }
     };
 
     applyTheme();
     fetchSettings();
     window.addEventListener('storage', applyTheme);
-    return () => window.removeEventListener('storage', applyTheme);
+    return () => {
+      controller.abort();
+      window.removeEventListener('storage', applyTheme);
+    };
   }, []);
 
   return (

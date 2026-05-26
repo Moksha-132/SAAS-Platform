@@ -72,8 +72,9 @@ const MarketplacePage = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-white focus:text-slate-900 focus:rounded-lg focus:font-bold">Skip to main content</a>
       <Navbar />
-      <div className="flex-grow pt-24 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+      <main id="main-content" className="flex-grow pt-24 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
         <div className="text-center mb-12">
           <h1 className="text-5xl font-extrabold text-[#0B132B] mb-6">Software <span className="text-[#b45309]">Marketplace</span></h1>
           <p className="text-slate-500 text-lg max-w-2xl mx-auto">Discover the perfect tools to accelerate your business growth.</p>
@@ -104,7 +105,7 @@ const MarketplacePage = () => {
             ))}
           </div>
         )}
-      </div>
+      </main>
       <Footer />
     </div>
   );

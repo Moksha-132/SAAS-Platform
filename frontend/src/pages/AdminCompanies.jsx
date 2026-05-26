@@ -21,6 +21,9 @@ const AdminCompanies = () => {
 
   const loadCompanies = async () => {
     const token = localStorage.getItem('syncsaas_token') || localStorage.getItem('token');
+    
+    let backendCompanies = [];
+    let isBackendSuccess = false;
 
     if (token) {
       try {
@@ -30,11 +33,11 @@ const AdminCompanies = () => {
         const data = await response.json();
         
         if (response.ok && Array.isArray(data)) {
-          setCompanies(data);
-          return;
+          backendCompanies = data;
+          isBackendSuccess = true;
         }
       } catch (err) {
-        console.warn(err.message);
+        console.warn('Backend fetch failed:', err.message);
       }
     }
 
@@ -45,14 +48,28 @@ const AdminCompanies = () => {
 
     const accounts = JSON.parse(localStorage.getItem('syncsaas_accounts')) || defaultAccounts;
     const clientUsers = accounts.filter(acc => acc.role === 'user');
-    setCompanies(clientUsers.map(acc => ({
+    
+    const localCompanies = clientUsers.map(acc => ({
       id: acc.id || acc.email,
-      company_name: acc.companyName || acc.company_name || `${acc.firstName} ${acc.lastName} Corp`,
+      company_name: acc.companyName || acc.company_name || `${acc.firstName || 'Generic'} ${acc.lastName || 'Corp'}`,
       email: acc.email,
       is_approved: acc.is_approved !== undefined ? acc.is_approved : (acc.status === 'active' || acc.status === undefined),
       monthly_spend: acc.monthlySpend || acc.monthly_spend || 49,
       created_at: acc.created_at || new Date().toISOString()
-    })));
+    }));
+
+    if (isBackendSuccess) {
+      // Merge backend and local companies by email
+      const merged = [...backendCompanies];
+      for (const local of localCompanies) {
+        if (!merged.find(b => b.email.toLowerCase() === local.email.toLowerCase())) {
+          merged.push(local);
+        }
+      }
+      setCompanies(merged);
+    } else {
+      setCompanies(localCompanies);
+    }
   };
 
   useEffect(() => {

@@ -149,8 +149,9 @@ const RegisterPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: bgColor, color: textColor }}>
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-white focus:text-slate-900 focus:rounded-lg focus:font-bold">Skip to main content</a>
       <Navbar />
-      <div className="flex-grow pt-24 pb-20 px-4 sm:px-6 lg:px-8 w-full flex items-center justify-center">
+      <main id="main-content" className="flex-grow pt-24 pb-20 px-4 sm:px-6 lg:px-8 w-full flex items-center justify-center">
         <div className="w-full max-w-md">
           <div className="text-center mb-10">
             <h1 className="text-4xl font-extrabold mb-3" style={{ color: textColor }}>
@@ -255,7 +256,7 @@ const RegisterPage = () => {
             </div>
           </div>
         </div>
-      </div>
+      </main>
       <Footer />
     </div>
   );
