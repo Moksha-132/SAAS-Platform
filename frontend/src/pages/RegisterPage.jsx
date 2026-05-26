@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { Link, useNavigate } from 'react-router-dom';
@@ -11,8 +11,14 @@ const RegisterPage = () => {
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('user');
   const [isLoading, setIsLoading] = useState(false);
+  const [statusMsg, setStatusMsg] = useState('');
   
   const navigate = useNavigate();
+
+  // Pre-warm the Render backend on page load to avoid cold-start delays
+  useEffect(() => {
+    fetch('http://localhost:5000/api/auth/settings', { method: 'GET' }).catch(() => {});
+  }, []);
 
   const settings = useWebsiteSettings();
 
@@ -35,6 +41,18 @@ const RegisterPage = () => {
     }
 
     setIsLoading(true);
+    setStatusMsg('Connecting to server...');
+
+    // AbortController: 15 second timeout to avoid infinite hang on Render cold start
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => {
+      controller.abort();
+    }, 15000);
+
+    // Show a helpful message after 5 seconds if still waiting
+    const slowMsgId = setTimeout(() => {
+      setStatusMsg('Server is starting up, please wait...');
+    }, 5000);
 
     try {
       const response = await fetch('http://localhost:5000/api/auth/register', {
@@ -45,13 +63,18 @@ const RegisterPage = () => {
           password,
           role,
           companyName: `${firstName} ${lastName} Corp`
-        })
+        }),
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
+      clearTimeout(slowMsgId);
 
       const data = await response.json();
 
       if (response.ok) {
         setIsLoading(false);
+        setStatusMsg('');
         if (data.token) {
           localStorage.setItem('syncsaas_token', data.token);
           localStorage.setItem('syncsaas_user', JSON.stringify(data.user));
@@ -62,12 +85,24 @@ const RegisterPage = () => {
         navigate('/login');
         return;
       } else {
+        clearTimeout(timeoutId);
+        clearTimeout(slowMsgId);
         alert(data.message || 'Registration failed');
         setIsLoading(false);
+        setStatusMsg('');
         return;
       }
     } catch (error) {
+      clearTimeout(timeoutId);
+      clearTimeout(slowMsgId);
+      if (error.name === 'AbortError') {
+        setIsLoading(false);
+        setStatusMsg('');
+        alert('The server took too long to respond. This usually happens when the server is starting up. Please wait 30 seconds and try again.');
+        return;
+      }
       console.warn('Backend API offline, falling back to LocalStorage simulation:', error.message);
+      setStatusMsg('');
     }
 
     // Fallback simulation
