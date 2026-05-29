@@ -130,7 +130,7 @@ const AdminDashboard = () => {
     csvContent += `Generated On,${new Date().toLocaleString()}\n`;
     csvContent += `Reporting Range,${dateFilter}\n\n`;
     csvContent += 'Metric,Value\n';
-    csvContent += `Total Platform Revenue,$${stats.revenue}\n`;
+    csvContent += `Total Platform Revenue,$${Number(stats.revenue).toFixed(2)}\n`;
     csvContent += `Registered Client Companies,${stats.companies}\n`;
     csvContent += `Active Sales Managers,${stats.activeManagers}\n`;
     csvContent += `Pending Manager Applications,${stats.pendingManagers}\n`;
@@ -232,7 +232,7 @@ const AdminDashboard = () => {
                    <BarChart3 className="text-green-600 w-5 h-5" />
                 </div>
               </div>
-              <p className="text-3xl font-black text-slate-900">${stats.revenue}</p>
+              <p className="text-3xl font-black text-slate-900">${Number(stats.revenue).toFixed(2)}</p>
               <p className="text-xs text-slate-400 mt-2 font-semibold">Includes manager & client fees</p>
             </div>
             
